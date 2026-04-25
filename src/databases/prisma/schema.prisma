@@ -4,4 +4,86 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
+}
+
+enum Role {
+  user
+  subAdmin
+  admin
+}
+
+enum Gender {
+  male
+  female
+}
+
+model User {
+  id                String    @id @default(cuid())
+  firstName         String
+  fatherName        String
+  grandFatherName   String?
+  email             String    @unique
+  phoneNumber       String
+  passwordHash      String
+  role              Role
+  permissions       String[]
+  gender            Gender
+  admissionYear     Int
+  studentId         String    @unique
+  isAccountVerified Boolean   @default(false)
+  isEmailVerified   Boolean   @default(false)
+  dormitoryBlock    String?
+  dormitoryNumber   String?
+  loginAttempts     Int       @default(0)
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  actedLogs     AuditLog[]     @relation("ActorRelation")
+  receivedLogs  AuditLog[]     @relation("TargetRelation")
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model AuditLog {
+  id               String   @id @default(cuid())
+  actorId          String?
+  targetId         String?
+  actorRole        Role
+  action           String
+  actorEmail       String
+  actorFirstName   String
+  actorFatherName  String
+  targetFirstName  String?
+  targetFatherName String?
+  targetEmail      String?
+  actorStudentId   String
+  targetStudentId  String?
+  deviceInfo       String?
+  ipAddress        String?
+  targetRole       Role?
+  changes          Json?
+  createdAt        DateTime @default(now())
+
+  actor  User? @relation("ActorRelation", fields: [actorId], references: [id], onDelete: SetNull)
+  target User? @relation("TargetRelation", fields: [targetId], references: [id], onDelete: SetNull)
+
+  @@map("auditLogs")
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  deviceInfo String?
+  ipAddress  String?
+  expiresAt  DateTime
+  lastUsedAt DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refreshTokens")
 }
