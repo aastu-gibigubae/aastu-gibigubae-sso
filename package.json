@@ -8,7 +8,12 @@
     "dev": "tsx --watch src/server.ts",
     "start": "node dist/server.js",
     "test": "echo \"No tests yet\" && exit 0",
-    "build": "tsc"
+    "build": "tsc",
+    "db:migrate": "prisma migrate dev --config src/prisma.config.ts",
+    "db:push": "prisma db push --config src/prisma.config.ts",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio --config src/prisma.config.ts",
+    "db:reset": "prisma migrate reset --config src/prisma.config.ts"
   },
   "keywords": [
     "sso",
