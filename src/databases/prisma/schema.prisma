@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
 
 enum Role {
@@ -18,27 +17,48 @@ enum Gender {
   female
 }
 
+enum Department {
+  architecture
+  chemicalEngineering
+  civilEngineering
+  electricalAndComputerEngineering
+  electromechanicalEngineering
+  environmentalEngineering
+  mechanicalEngineering
+  miningEngineering
+  softwareEngineering
+  biotechnology
+  foodScienceAndAppliedNutrition
+  geology
+  industrialChemistry
+  postgraduate
+
+  other
+}
+
 model User {
-  id                String    @id @default(cuid())
+  id                String     @id @default(cuid())
   firstName         String
   fatherName        String
   grandFatherName   String?
-  email             String    @unique
+  email             String     @unique
+  christianName     String?
   phoneNumber       String
   passwordHash      String
   role              Role
-  permissions       String[]
+  permissions       String[]   @default([])
   gender            Gender
   admissionYear     Int
-  studentId         String    @unique
-  isAccountVerified Boolean   @default(false)
-  isEmailVerified   Boolean   @default(false)
+  studentId         String     @unique
+  isAccountVerified Boolean    @default(false)
+  isEmailVerified   Boolean    @default(false)
   dormitoryBlock    String?
   dormitoryNumber   String?
-  loginAttempts     Int       @default(0)
+  department        Department
+  loginAttempts     Int        @default(0)
   lastLoginAt       DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   actedLogs     AuditLog[]     @relation("ActorRelation")
   receivedLogs  AuditLog[]     @relation("TargetRelation")

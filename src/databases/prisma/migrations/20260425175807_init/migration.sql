@@ -4,6 +4,9 @@ CREATE TYPE "Role" AS ENUM ('user', 'subAdmin', 'admin');
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('male', 'female');
 
+-- CreateEnum
+CREATE TYPE "Department" AS ENUM ('architecture', 'chemicalEngineering', 'civilEngineering', 'electricalAndComputerEngineering', 'electromechanicalEngineering', 'environmentalEngineering', 'mechanicalEngineering', 'miningEngineering', 'softwareEngineering', 'biotechnology', 'foodScienceAndAppliedNutrition', 'geology', 'industrialChemistry', 'postgraduate', 'other');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -11,10 +14,11 @@ CREATE TABLE "users" (
     "fatherName" TEXT NOT NULL,
     "grandFatherName" TEXT,
     "email" TEXT NOT NULL,
+    "christianName" TEXT,
     "phoneNumber" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "role" "Role" NOT NULL,
-    "permissions" TEXT[],
+    "permissions" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "gender" "Gender" NOT NULL,
     "admissionYear" INTEGER NOT NULL,
     "studentId" TEXT NOT NULL,
@@ -22,6 +26,7 @@ CREATE TABLE "users" (
     "isEmailVerified" BOOLEAN NOT NULL DEFAULT false,
     "dormitoryBlock" TEXT,
     "dormitoryNumber" TEXT,
+    "department" "Department" NOT NULL,
     "loginAttempts" INTEGER NOT NULL DEFAULT 0,
     "lastLoginAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
