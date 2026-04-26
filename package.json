@@ -9,11 +9,11 @@
     "start": "node dist/server.js",
     "test": "echo \"No tests yet\" && exit 0",
     "build": "tsc",
-    "db:migrate": "prisma migrate dev --config src/prisma.config.ts",
-    "db:push": "prisma db push --config src/prisma.config.ts",
-    "db:generate": "prisma generate --config src/prisma.config.ts",
-    "db:studio": "prisma studio --config src/prisma.config.ts",
-    "db:reset": "prisma migrate reset --config src/prisma.config.ts"
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "keywords": [
     "sso",
@@ -52,6 +52,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.6",
+    "pg": "^8.20.0",
     "tsx": "^4.21.0",
     "zod": "^4.3.6"
   }

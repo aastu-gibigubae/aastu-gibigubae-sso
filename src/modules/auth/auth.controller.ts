@@ -1,14 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
 import { registerSchema } from "./auth.schema.js";
 import { ZodError } from "zod";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import type { AppError } from "../../types/error.js";
-import prisma from "../../config/db.js";
+import { prisma } from "../../config/db.js";
 import { Department, Role } from "@prisma/client";
 import { envConfig } from "../../config/config.js";
 import { emailVerificationTemplate } from "../../templates/emailVerification.js";
 import { sendEmail } from "../../utils/mailer.js";
+import { createAuditLog } from "../../services/audit.service.js";
 export const register = async (
   req: Request,
   res: Response,
@@ -26,18 +27,21 @@ export const register = async (
       gender,
       studentId,
       department,
-      rememberMe,
     } = data;
 
-    const expiredTime = rememberMe
-      ? envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME
-      : envConfig.REFRESH_TOKEN_EXPIRATION;
+    // const expiredTime = rememberMe
+    //   ? envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME
+    //   : envConfig.REFRESH_TOKEN_EXPIRATION;
 
     const admissionYear = parseInt("20" + studentId.split("/")[1]);
 
     const passwordHash = await bcrypt.hash(password, 12);
 
     const role = Role.user;
+    const options: SignOptions = {
+      expiresIn:
+        envConfig.EMAIL_VERIFICATION_EXPIRY as SignOptions["expiresIn"],
+    };
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -71,19 +75,56 @@ export const register = async (
           admissionYear,
           department: department as Department,
           role,
-          password: passwordHash,
+          passwordHash,
+        },
+      });
+      await createAuditLog({
+        actorId: existingUser.id,
+        targetId: existingUser.id,
+
+        actorRole: Role.user,
+        targetRole: Role.user,
+
+        action: "USER_UPDATED_UNVERIFIED",
+
+        actorEmail: email,
+        actorFirstName: firstName,
+        actorFatherName: fatherName,
+        actorStudentId: studentId,
+
+        targetEmail: email,
+        targetFirstName: firstName,
+        targetFatherName: fatherName,
+        targetStudentId: studentId,
+
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+
+        changes: {
+          type: "update",
+          updatedFields: [
+            "firstName",
+            "fatherName",
+            "phoneNumber",
+            "gender",
+            "studentId",
+            "department",
+            "password",
+          ],
         },
       });
       userId = existingUser.id;
-      token = jwt.sign({ userId }, envConfig.EMAIL_TOKEN_SECRET, {
-        expiresIn: Number(envConfig.EMAIL_VERIFICATION_EXPIRY),
-      });
+      token = jwt.sign(
+        { userId, type: "EMAIL_VERIFICATION" },
+        envConfig.EMAIL_TOKEN_SECRET,
+        options
+      );
       verificationLink = `https://your-frontend.com/verify-email?token=${token}`;
 
       html = emailVerificationTemplate(
         firstName,
         verificationLink,
-        "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
+        // "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
       );
       await sendEmail({
         to: email,
@@ -116,22 +157,54 @@ export const register = async (
         },
       });
       userId = newUser.id;
-      token = jwt.sign({ userId }, envConfig.EMAIL_TOKEN_SECRET, {
-        expiresIn: Number(envConfig.EMAIL_VERIFICATION_EXPIRY),
+      token = jwt.sign(
+        { userId, type: "EMAIL_VERIFICATION" },
+        envConfig.EMAIL_TOKEN_SECRET,
+        options,
+      );
+      await createAuditLog({
+        actorId: newUser.id,
+        targetId: newUser.id,
+
+        actorRole: Role.user,
+        targetRole: Role.user,
+
+        action: "USER_REGISTERED",
+
+        actorEmail: newUser.email,
+        actorFirstName: newUser.firstName,
+        actorFatherName: newUser.fatherName,
+        actorStudentId: newUser.studentId,
+
+        targetEmail: newUser.email,
+        targetFirstName: newUser.firstName,
+        targetFatherName: newUser.fatherName,
+        targetStudentId: newUser.studentId,
+
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+
+        changes: {
+          type: "create",
+          createdFields: [
+            "firstName",
+            "fatherName",
+            "email",
+            "phoneNumber",
+            "gender",
+            "studentId",
+            "department",
+            "password",
+          ],
+        },
       });
       verificationLink = `https://your-frontend.com/verify-email?token=${token}`;
 
       html = emailVerificationTemplate(
         firstName,
         verificationLink,
-        "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
+        // "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
       );
-      await sendEmail({
-        to: email,
-        subject: "Verify your AASTU GibiGubae account",
-        html,
-      });
-
       await sendEmail({
         to: email,
         subject: "Verify your AASTU GibiGubae account",

@@ -76,9 +76,6 @@ CREATE TABLE "refreshTokens" (
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "users_studentId_key" ON "users"("studentId");
-
 -- AddForeignKey
 ALTER TABLE "auditLogs" ADD CONSTRAINT "auditLogs_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 

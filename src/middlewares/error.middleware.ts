@@ -12,4 +12,4 @@ const errorMiddleware = async (
     message: err.message || "Internal Server Error",
   });
 };
-export default errorMiddleware
+export default errorMiddleware;

@@ -1,45 +1,41 @@
+// {
+
+//   "compilerOptions": {
+//     "rootDir": "./src",
+//     "outDir": "./dist",
+
+//     "target": "ES2022",
+//     "module": "NodeNext",
+//     "moduleResolution": "NodeNext",
+
+//     "types": ["node"],
+
+//     "strict": true,
+//     "skipLibCheck": true,
+
+//     "sourceMap": true,
+
+//     "noUncheckedIndexedAccess": true,
+//     "exactOptionalPropertyTypes": false,
+
+//     "verbatimModuleSyntax": false,
+//     "isolatedModules": true,
+
+//     "moduleDetection": "force"
+//   },
+//   "include": ["src", "prisma.config.ts"]
+// }
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "target": "es2025",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
+    "target": "ES2023",
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
+  },
+  "exclude": ["node_modules", "prisma.config.ts"],
+  "include": ["src/**/*"]
 }

@@ -26,5 +26,4 @@ export const registerSchema = z.object({
     .regex(/^ets\d{4}\/\d{2}$/, "Student ID must be like: ets1234/25")
     .transform((v) => v.toLowerCase()),
   department: z.enum(departmentValues),
-  rememberMe: z.boolean(),
 });

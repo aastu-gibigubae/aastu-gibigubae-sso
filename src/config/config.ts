@@ -1,7 +1,7 @@
-import { config } from "dotenv";
-import { z } from "zod";
 
-config({ path: ".env" });
+import { z } from "zod";
+import dotenv from "dotenv";
+dotenv.config();
 
 const envSchema = z.object({
   REFRESH_TOKEN_EXPIRATION_REMEMBER_ME: z.string(),
@@ -21,6 +21,7 @@ const envSchema = z.object({
   EMAIL_SMTP_USER: z.string(),
   EMAIL_SMTP_PASS: z.string(),
   EMAIL_FROM_NAME: z.string(),
+  PORT: z.string(),
 });
 
 const env = envSchema.parse(process.env);
