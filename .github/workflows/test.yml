@@ -33,7 +33,7 @@ jobs:
           NODE_ENV: test
           PORT: 5500
           # Using your Testing DB URL
-          DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
+          DATABASE_URL_TESTING: ${{ secrets.DATABASE_URL_TESTING }}
           
           # JWT Keys (Stored in GitHub Secrets for safety)
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
