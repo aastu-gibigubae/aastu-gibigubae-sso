@@ -30,11 +30,15 @@ jobs:
         # We pass all your specific env requirements here
         run: npm test
         env:
-          NODE_ENV: test
-        # This tells Prisma to look for the engine in your custom folder
-          PRISMA_CLIENT_ENGINE_TYPE: 'library'
-          # This helps vitest resolve the custom path
-          NODE_PATH: .
+# 1. Directs the runtime to find the engine in your custom folder
+          PRISMA_CLIENT_ENGINE_TYPE: library
+          
+          # 2. Tell Prisma exactly where the datamodel and client live
+          PRISMA_CLIENT_DATAMODEL_SHARED_PATH: ${{ github.workspace }}/src/generated/prisma
+          
+          # 3. Ensure Node can resolve modules from the root
+          NODE_PATH: ${{ github.workspace }}/src
+
           PORT: 5500
           # Using your Testing DB URL
           DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
