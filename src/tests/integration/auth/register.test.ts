@@ -21,7 +21,7 @@ const createUser = (overrides: Partial<registerInput> = {}): registerInput => ({
   password: "12345678",
   phoneNumber: "0926727954",
   gender: "male", 
-  studentId: "ets1088/25",
+  studentId: "ets1088/25", 
   department: "softwareEngineering",
   ...overrides,
 });
