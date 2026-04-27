@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -55,7 +55,7 @@ model User {
   permissions       String[]   @default([])
   gender            Gender
   admissionYear     Int
-  studentId         String     
+  studentId         String
   isAccountVerified Boolean    @default(false)
   isEmailVerified   Boolean    @default(false)
   dormitoryBlock    String?
