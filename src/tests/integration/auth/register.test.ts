@@ -1,4 +1,4 @@
-import { test, describe, expect, beforeEach } from "vitest";
+import { test, describe, expect, beforeEach, afterAll } from "vitest";
 import request from "supertest";
 import { prisma } from "../../../config/db.js";
 import app from "../../../app.js";
@@ -8,9 +8,13 @@ beforeEach(async () => {
   //clearing the db
   await prisma.user.deleteMany();
 });
+afterAll(async () => {
+  await prisma.user.deleteMany();
+  await prisma.$disconnect();
+});
 const register = (body: registerInput) =>
   request(app).post("/api/v1/auth/register").send(body);
-const createUser = (overrides:Partial<registerInput> = {}):registerInput => ({
+const createUser = (overrides: Partial<registerInput> = {}): registerInput => ({
   firstName: "nathnael",
   fatherName: "Tamirat",
   email: "brooke.kohler60@ethereal.email",
@@ -68,7 +72,7 @@ describe("POST api/v1/auth/register", () => {
     expect(res.body.message).toBe("Invalid department option");
   }, 10000);
   test("should return 400 and Gender must be either 'male' or 'female", async () => {
-    const body = createUser({ gender: "m" as any});
+    const body = createUser({ gender: "m" as any });
     const res = await register(body);
     expect(res.statusCode).toBe(400);
     expect(res.body.success).toBe(false);
