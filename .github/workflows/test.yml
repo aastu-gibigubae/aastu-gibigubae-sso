@@ -26,24 +26,30 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Fix Prisma Path for CI
+        # This manually populates the hidden folder Prisma expects
+        run: |
+          mkdir -p node_modules/.prisma/client
+          cp -R src/generated/prisma/* node_modules/.prisma/client/
+
       - name: Run Tests
-        # We pass all your specific env requirements here
         run: npm test
         env:
-# 1. Directs the runtime to find the engine in your custom folder
+          NODE_ENV: test
+          # Directs runtime to find the engine in your custom folder
           PRISMA_CLIENT_ENGINE_TYPE: library
           
-          # 2. Tell Prisma exactly where the datamodel and client live
+          # Absolute path to your generated files
           PRISMA_CLIENT_DATAMODEL_SHARED_PATH: ${{ github.workspace }}/src/generated/prisma
           
-          # 3. Ensure Node can resolve modules from the root
+          # Ensure Node can resolve modules from the root
           NODE_PATH: ${{ github.workspace }}/src
 
           PORT: 5500
-          # Using your Testing DB URL
+          # Using your Testing DB URL from GitHub Secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
           
-          # JWT Keys (Stored in GitHub Secrets for safety)
+          # JWT Keys
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
           JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
           EMAIL_TOKEN_SECRET: ${{ secrets.EMAIL_TOKEN_SECRET }}
