@@ -33,11 +33,11 @@ steps:
           # Directs runtime to find the engine in your custom folder
           PRISMA_CLIENT_ENGINE_TYPE: library
           
-          # Absolute path to your generated files
-          PRISMA_CLIENT_DATAMODEL_SHARED_PATH: ${{ github.workspace }}/src/generated/prisma
+          # # Absolute path to your generated files
+          # PRISMA_CLIENT_DATAMODEL_SHARED_PATH: ${{ github.workspace }}/src/generated/prisma
           
-          # Ensure Node can resolve modules from the root
-          NODE_PATH: ${{ github.workspace }}/src
+          # # Ensure Node can resolve modules from the root
+          # NODE_PATH: ${{ github.workspace }}/src
 
           PORT: 5500
           # Using your Testing DB URL from GitHub Secrets
