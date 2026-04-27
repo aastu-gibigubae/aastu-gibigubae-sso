@@ -27,6 +27,15 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Bridge Client to Default
+        # This fixes the 'Cannot find module .prisma/client/default' error
+        # by creating the specific entry point the Require stack is looking for.
+        run: |
+          mkdir -p node_modules/.prisma/client
+          echo "export * from './client.js';" > node_modules/.prisma/client/default.js
+          # Also copy files to the main package folder just in case
+          cp -R node_modules/.prisma/client/* node_modules/@prisma/client/
+
       - name: Run Tests
         run: npm test
         env:
