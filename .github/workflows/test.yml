@@ -31,7 +31,10 @@ jobs:
         run: npm test
         env:
           NODE_ENV: test
-          PRISMA_CLIENT_ENGINE_TYPE: library
+        # This tells Prisma to look for the engine in your custom folder
+          PRISMA_CLIENT_ENGINE_TYPE: 'library'
+          # This helps vitest resolve the custom path
+          NODE_PATH: .
           PORT: 5500
           # Using your Testing DB URL
           DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
