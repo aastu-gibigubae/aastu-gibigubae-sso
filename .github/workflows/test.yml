@@ -31,6 +31,7 @@ jobs:
         run: npm test
         env:
           NODE_ENV: test
+          PRISMA_CLIENT_ENGINE_TYPE: library
           PORT: 5500
           # Using your Testing DB URL
           DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
