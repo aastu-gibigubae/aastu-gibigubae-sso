@@ -6,7 +6,7 @@ import { registerInput } from "../../../modules/auth/auth.schema.js";
 
 beforeEach(async () => {
   //clearing the db
-  await prisma.$transaction([prisma.user.deleteMany()]);
+  await prisma.user.deleteMany();
 });
 const register = (body: registerInput) =>
   request(app).post("/api/v1/auth/register").send(body);
