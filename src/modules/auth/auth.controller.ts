@@ -5,11 +5,12 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import type { AppError } from "../../types/error.js";
 import { prisma } from "../../config/db.js";
-import { Department, Role } from "@prisma/client";
+
 import { envConfig } from "../../config/config.js";
 import { emailVerificationTemplate } from "../../templates/emailVerification.js";
 import { sendEmail } from "../../utils/mailer.js";
 import { createAuditLog } from "../../services/audit.service.js";
+import { Department, Role } from "../../generated/enums.js";
 export const register = async (
   req: Request,
   res: Response,

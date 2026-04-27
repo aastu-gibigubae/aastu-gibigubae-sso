@@ -1,5 +1,6 @@
 import {prisma} from "../config/db.js";
-import { Role } from "@prisma/client";
+import { Role } from "../generated/enums.js";
+
 
 interface AuditParams {
   actorId?: string;

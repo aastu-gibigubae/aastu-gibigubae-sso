@@ -1,5 +1,6 @@
-import { Department } from "@prisma/client";
+
 import { z } from "zod";
+import { Department } from "../../generated/enums.js";
 const departmentValues = Object.values(Department) as [string, ...string[]];
 
 export const registerSchema = z.object({

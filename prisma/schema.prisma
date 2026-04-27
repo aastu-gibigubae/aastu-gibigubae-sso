@@ -77,15 +77,15 @@ model AuditLog {
   id               String   @id @default(cuid())
   actorId          String?
   targetId         String?
-  actorRole        Role
+  actorRole        Role?
   action           String
-  actorEmail       String
-  actorFirstName   String
-  actorFatherName  String
+  actorEmail       String?
+  actorFirstName   String?
+  actorFatherName  String?
   targetFirstName  String?
   targetFatherName String?
   targetEmail      String?
-  actorStudentId   String
+  actorStudentId   String?
   targetStudentId  String?
   deviceInfo       String?
   ipAddress        String?
