@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    steps:
+steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -25,12 +25,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: npx prisma generate
-
-      - name: Fix Prisma Path for CI
-        # This manually populates the hidden folder Prisma expects
-        run: |
-          mkdir -p node_modules/.prisma/client
-          cp -R src/generated/prisma/* node_modules/.prisma/client/
 
       - name: Run Tests
         run: npm test

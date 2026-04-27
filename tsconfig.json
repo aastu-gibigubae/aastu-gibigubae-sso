@@ -8,7 +8,10 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@prisma/client": ["./src/generated/prisma"]
+    }
   },
   "include": ["src/**/*", "prisma/**/*"],
   "exclude": ["node_modules", "dist"]
