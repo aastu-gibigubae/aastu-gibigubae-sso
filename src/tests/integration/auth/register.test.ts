@@ -20,7 +20,7 @@ const createUser = (overrides: Partial<registerInput> = {}): registerInput => ({
   email: "brooke.kohler60@ethereal.email",
   password: "12345678",
   phoneNumber: "0926727954",
-  gender: "male",
+  gender: "male", 
   studentId: "ets1088/25",
   department: "softwareEngineering",
   ...overrides,
