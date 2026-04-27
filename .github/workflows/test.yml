@@ -24,7 +24,12 @@ jobs:
         run: npm install
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        # This keeps your TS happy if you import from the custom folder
+        run: npx prisma generate 
+
+      - name: Generate Prisma Client (Default Location)
+        # This fixes the "Cannot find module" error for the library
+        run: npx prisma generate --generator client
 
       - name: Run Tests
         # We pass all your specific env requirements here
