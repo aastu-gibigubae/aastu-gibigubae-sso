@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
@@ -17,8 +17,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -34,24 +34,25 @@ jobs:
           PORT: 5500
           # Using your Testing DB URL
           DATABASE_URL_TESTING: ${{ secrets.DATABASE_URL_TESTING }}
-          
+          DATABASE_URL: ${{ secrets.DATABASE_URL_TESTING }}
+
           # JWT Keys (Stored in GitHub Secrets for safety)
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
           JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
           EMAIL_TOKEN_SECRET: ${{ secrets.EMAIL_TOKEN_SECRET }}
-          
+
           # Token Expirations
           ACCESS_TOKEN_EXPIRATION: 15m
           REFRESH_TOKEN_EXPIRATION: 2d
           REFRESH_TOKEN_EXPIRATION_REMEMBER_ME: 90d
-          
+
           # Email Config
           EMAIL_SMTP_HOST: mail.aastugibigubae.com
           EMAIL_SMTP_PORT: 465
           EMAIL_SMTP_USER: noreply@aastugibigubae.com
           EMAIL_SMTP_PASS: ${{ secrets.EMAIL_SMTP_PASS }}
           EMAIL_FROM_NAME: "AASTU GibiGubae"
-          
+
           # Security
           PASSWORD_RESET_TOKEN_EXPIRY: 30m
           EMAIL_VERIFICATION_EXPIRY: 24h
