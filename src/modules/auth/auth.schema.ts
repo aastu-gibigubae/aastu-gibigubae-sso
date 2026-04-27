@@ -20,10 +20,15 @@ export const registerSchema = z.object({
     .string()
     .regex(/^\+?\d{8,15}$/, "Invalid phone Number")
     .transform((val) => (val.startsWith("0") ? "+251" + val.slice(1) : val)),
-  gender: z.enum(["male", "female"]),
+  gender: z.enum(["male", "female"], {
+    message: "Gender must be either 'male' or 'female'",
+  }),
   studentId: z
     .string()
     .regex(/^ets\d{4}\/\d{2}$/, "Student ID must be like: ets1234/25")
     .transform((v) => v.toLowerCase()),
-  department: z.enum(departmentValues),
+  department: z.enum(departmentValues, {
+    message: "Invalid department option",
+  }),
 });
+export type registerInput = z.input<typeof registerSchema>;

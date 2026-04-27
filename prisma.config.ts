@@ -5,9 +5,11 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
 const DATABASE_URL =
-  process.env.NODE_ENV == "development"
-    ? process.env["DATABASE_URL"]
-    : process.env["DATABASE_URL_PROD"];
+  process.env.NODE_ENV === "test"
+    ? process.env.DATABASE_URL_TESTING
+    : process.env.NODE_ENV === "production"
+      ? process.env.DATABASE_URL_PRODUCTION
+      : process.env.DATABASE_URL;
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {

@@ -134,7 +134,7 @@ export const register = async (
 
       return res.status(200).json({
         success: true,
-        message: "Verification email resent successfully",
+        message: "Verification email resent successfully.",
       });
     }
 
