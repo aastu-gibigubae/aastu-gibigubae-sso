@@ -29,7 +29,6 @@ describe("POST api/v1/auth/register", () => {
   test("should return 201 number and email verification message", async () => {
     const body = createUser();
     const res = await request(app).post("/api/v1/auth/register").send(body);
-    console.log(res.body);
     expect(res.statusCode).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.message).toBe("Account created. Verification email sent.");
