@@ -10,7 +10,7 @@ const envSchema = z.object({
   PASSWORD_RESET_TOKEN_EXPIRY: z.string(),
   EMAIL_TOKEN_SECRET: z.string(),
   EMAIL_VERIFICATION_EXPIRY: z.string(),
-
+  NODE_ENV:z.string(),
   DATABASE_URL: z.string(),
 
   JWT_PRIVATE_KEY: z.string(),

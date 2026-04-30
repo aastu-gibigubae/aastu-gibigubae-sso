@@ -32,4 +32,9 @@ export const registerSchema = z.object({
     message: "Invalid department option",
   }),
 });
+
+export const emailTokenSchema = z.object({
+  userId:z.string(),
+  type: z.literal("EMAIL_VERIFICATION")
+})
 export type registerInput = z.input<typeof registerSchema>;
