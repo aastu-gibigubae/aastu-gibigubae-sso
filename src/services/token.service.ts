@@ -16,7 +16,7 @@ class TokenService {
     try {
       return jwt.verify(token, envConfig.EMAIL_TOKEN_SECRET);
     } catch (err) {
-      throw errorService("Verification link is invalid or has expired", 410);
+      throw errorService("Verification link is invalid or has expired", 400);
     }
   }
 }
