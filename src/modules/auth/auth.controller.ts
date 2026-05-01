@@ -322,10 +322,7 @@ export const verifyEmail = async (
       refreshTokenPayLoad,
       refreshTokenOptions,
     );
-    res.cookie("access-token", accessToken, {
-      ...cookieOptions,
-      maxAge: 1000 * 60 * 15,
-    });
+
     res.cookie("refresh-token", refreshToken, {
       ...cookieOptions,
       maxAge: 1000 * 60 * 60 * 24 * 90,
@@ -335,6 +332,7 @@ export const verifyEmail = async (
       success: true,
       message: "Email verified successfully",
       data: updatedUser,
+      accessToken
     });
   } catch (err) {
     if (err instanceof ZodError) {
