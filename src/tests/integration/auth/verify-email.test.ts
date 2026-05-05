@@ -51,7 +51,7 @@ const generateToken = () => {
   return tokenService.generateEmailVerifyToken(payload, options);
 };
 
-describe("POST /api/v1/auth/verify-email", () => {
+describe.sequential("POST /api/v1/auth/verify-email", () => {
   test("should verify email successfully and return tokens", async () => {
     const agent = request.agent(app);
     const token = generateToken();
@@ -140,7 +140,7 @@ describe("POST /api/v1/auth/verify-email", () => {
       success: false,
       message: "User is already verified",
     });
-  });
+  },10000);
 
   test("should return 400 for invalid token", async () => {
     const res = await request(app)

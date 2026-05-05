@@ -1,5 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import { emailTokenSchema, registerSchema } from "./auth.schema.js";
+import {
+  emailTokenSchema,
+  loginSchema,
+  registerSchema,
+} from "./auth.schema.js";
 import { success, ZodError } from "zod";
 import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -332,7 +336,7 @@ export const verifyEmail = async (
       success: true,
       message: "Email verified successfully",
       data: updatedUser,
-      accessToken
+      accessToken,
     });
   } catch (err) {
     if (err instanceof ZodError) {
@@ -354,6 +358,130 @@ export const verifyEmail = async (
       return next(error);
     }
 
+    next(err);
+  }
+};
+
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    let user;
+    const data = loginSchema.parse(req.body);
+    const { email, password, rememberMe } = data;
+    const passwordHash = await bcrypt.hash(password, 12);
+    user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (user==null) {
+      throw errorService("User not found", 404);
+    }
+
+    if (user.loginAttempts == 3 && user.lastLoginAt != null) {
+      const now = new Date();
+      const lastAttempt = new Date(user.lastLoginAt);
+      const diffInMins = now.getTime() - lastAttempt.getTime();
+      const fiveMins = 60000 * 5;
+      if (diffInMins < fiveMins) {
+        throw errorService(
+          "Too many login attempts. Try again in 5 minutes.",
+          429,
+        );
+      }
+    }
+      if (!user.isEmailVerified) {
+        throw errorService(
+          "Email not verified. Please verify your email or register again to receive a new verification email.",
+          403,
+        );
+      }
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!isValidPassword) {
+        await prisma.user.update({
+          where: {
+            email,
+          },
+          data: {
+            loginAttempts: { increment: 1 },
+            lastLoginAt: new Date(),
+          },
+        });
+        throw errorService("Invalid email or password", 401);
+      }
+      let userId = user.id;
+      const accessTokenOptions: SignOptions = {
+        expiresIn:
+          envConfig.ACCESS_TOKEN_EXPIRATION as SignOptions["expiresIn"],
+        algorithm: "RS256",
+      };
+      const refreshTokenOptions: SignOptions = {
+        expiresIn:
+          envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"],
+        algorithm: "RS256",
+      };
+      const accessTokenPayLoad = {
+        userId,
+        type: "ACCESS_TOKEN",
+      };
+      const refreshTokenPayLoad = {
+        userId,
+        type: "REFRESH_TOKEN",
+      };
+      const accessToken = tokenService.generateSecurityToken(
+        accessTokenPayLoad,
+        accessTokenOptions,
+      );
+      const refreshToken = tokenService.generateSecurityToken(
+        refreshTokenPayLoad,
+        refreshTokenOptions,
+      );
+
+      res.cookie("refresh-token", refreshToken, {
+        ...cookieOptions,
+        maxAge: 1000 * 60 * 60 * 24 * 90,
+      });
+      user = await prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          lastLoginAt: null,
+          loginAttempts: 0,
+        },
+        select: {
+          ...userSafeSelect,
+        },
+      });
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+        data: user,
+        accessToken,
+      });
+    
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        targetRole: Role.user,
+        action: "Login_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+
+        changes: {
+          type: "security_event",
+          reason: "invalid_or_expired_token",
+        },
+      });
+      error.status = 400;
+      return next(error);
+    }
     next(err);
   }
 };
