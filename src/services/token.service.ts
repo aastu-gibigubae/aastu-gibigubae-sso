@@ -8,6 +8,9 @@ class TokenService {
   generateEmailVerifyToken(payload: tokenType, options: SignOptions) {
     return jwt.sign(payload, envConfig.EMAIL_TOKEN_SECRET, options);
   }
+  generatePasswordResetToken(payload: tokenType, options: SignOptions) {
+    return jwt.sign(payload, envConfig.PASSWORD_TOKEN_SECRET, options);
+  }
   generateSecurityToken(payload: tokenType, options: SignOptions) {
     return jwt.sign(payload, envConfig.JWT_PRIVATE_KEY, options);
   }

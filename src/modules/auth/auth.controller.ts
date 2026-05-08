@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import {
   emailTokenSchema,
   loginSchema,
+  passwordRequestSchema,
   registerSchema,
 } from "./auth.schema.js";
 import { success, ZodError } from "zod";
@@ -19,6 +20,7 @@ import { errorService } from "../../services/error.service.js";
 import { decode } from "node:punycode";
 import { userSafeSelect } from "../../services/db.select/user.select.js";
 import { cookieOptions } from "../../config/cookie.option.js";
+import { passwordResetTemplate } from "../../templates/passwordReset.js";
 export const register = async (
   req: Request,
   res: Response,
@@ -377,7 +379,7 @@ export const login = async (
         email,
       },
     });
-    if (user==null) {
+    if (user == null) {
       throw errorService("User not found", 404);
     }
 
@@ -393,76 +395,74 @@ export const login = async (
         );
       }
     }
-      if (!user.isEmailVerified) {
-        throw errorService(
-          "Email not verified. Please verify your email or register again to receive a new verification email.",
-          403,
-        );
-      }
-      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
-      if (!isValidPassword) {
-        await prisma.user.update({
-          where: {
-            email,
-          },
-          data: {
-            loginAttempts: { increment: 1 },
-            lastLoginAt: new Date(),
-          },
-        });
-        throw errorService("Invalid email or password", 401);
-      }
-      let userId = user.id;
-      const accessTokenOptions: SignOptions = {
-        expiresIn:
-          envConfig.ACCESS_TOKEN_EXPIRATION as SignOptions["expiresIn"],
-        algorithm: "RS256",
-      };
-      const refreshTokenOptions: SignOptions = {
-        expiresIn:
-          envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"],
-        algorithm: "RS256",
-      };
-      const accessTokenPayLoad = {
-        userId,
-        type: "ACCESS_TOKEN",
-      };
-      const refreshTokenPayLoad = {
-        userId,
-        type: "REFRESH_TOKEN",
-      };
-      const accessToken = tokenService.generateSecurityToken(
-        accessTokenPayLoad,
-        accessTokenOptions,
+    if (!user.isEmailVerified) {
+      throw errorService(
+        "Email not verified. Please verify your email or register again to receive a new verification email.",
+        403,
       );
-      const refreshToken = tokenService.generateSecurityToken(
-        refreshTokenPayLoad,
-        refreshTokenOptions,
-      );
-
-      res.cookie("refresh-token", refreshToken, {
-        ...cookieOptions,
-        maxAge: 1000 * 60 * 60 * 24 * 90,
-      });
-      user = await prisma.user.update({
+    }
+    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+    if (!isValidPassword) {
+      await prisma.user.update({
         where: {
           email,
         },
         data: {
-          lastLoginAt: null,
-          loginAttempts: 0,
-        },
-        select: {
-          ...userSafeSelect,
+          loginAttempts: { increment: 1 },
+          lastLoginAt: new Date(),
         },
       });
-      res.status(200).json({
-        success: true,
-        message: "Login successful",
-        data: user,
-        accessToken,
-      });
-    
+      throw errorService("Invalid email or password", 401);
+    }
+    let userId = user.id;
+    const accessTokenOptions: SignOptions = {
+      expiresIn: envConfig.ACCESS_TOKEN_EXPIRATION as SignOptions["expiresIn"],
+      algorithm: "RS256",
+    };
+    const refreshTokenOptions: SignOptions = {
+      expiresIn:
+        envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"],
+      algorithm: "RS256",
+    };
+    const accessTokenPayLoad = {
+      userId,
+      type: "ACCESS_TOKEN",
+    };
+    const refreshTokenPayLoad = {
+      userId,
+      type: "REFRESH_TOKEN",
+    };
+    const accessToken = tokenService.generateSecurityToken(
+      accessTokenPayLoad,
+      accessTokenOptions,
+    );
+    const refreshToken = tokenService.generateSecurityToken(
+      refreshTokenPayLoad,
+      refreshTokenOptions,
+    );
+
+    res.cookie("refresh-token", refreshToken, {
+      ...cookieOptions,
+      maxAge: 1000 * 60 * 60 * 24 * 90,
+    });
+    user = await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        lastLoginAt: null,
+        loginAttempts: 0,
+      },
+      select: {
+        ...userSafeSelect,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: user,
+      accessToken,
+    });
   } catch (err) {
     if (err instanceof ZodError) {
       const error: AppError = new Error(
@@ -483,5 +483,75 @@ export const login = async (
       return next(error);
     }
     next(err);
+  }
+};
+
+export const PasswordResetRequestController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = passwordRequestSchema.parse(req.body);
+    const { email } = data;
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (user == null) {
+      throw errorService("User not found", 404);
+    }
+    if (!user.isEmailVerified) {
+      throw errorService(
+        "Email not verified. Please verify your email or register again to receive a new verification email.",
+        403,
+      );
+    }
+    const userId = user.id;
+    const payload = {
+      userId,
+      type: "EMAIL_VERIFICATION",
+    };
+    const options: SignOptions = {
+      expiresIn:
+        envConfig.PASSWORD_RESET_TOKEN_EXPIRY as SignOptions["expiresIn"],
+    };
+    const token = tokenService.generateEmailVerifyToken(payload, options);
+    const verificationLink = `https://your-frontend.com/password-reset?token=${token}`;
+
+    const html = passwordResetTemplate(
+      user.firstName,
+      verificationLink,
+      // "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
+    );
+    await sendEmail({
+      to: email,
+      subject: "Reset Your AASTU GibiGubae Password",
+      html,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Password reset instructions sent to your email",
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "PASSWORD_RESET_EMAIL_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "email_delivery_failed",
+          endpoint: "/auth/password-reset/request",
+        },
+      });
+      return next(error);
+    }
+    next(err)
   }
 };

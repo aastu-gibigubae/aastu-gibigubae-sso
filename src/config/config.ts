@@ -9,6 +9,7 @@ const envSchema = z.object({
   ACCESS_TOKEN_EXPIRATION: z.string(),
   PASSWORD_RESET_TOKEN_EXPIRY: z.string(),
   EMAIL_TOKEN_SECRET: z.string(),
+  PASSWORD_TOKEN_SECRET: z.string(),
   EMAIL_VERIFICATION_EXPIRY: z.string(),
   NODE_ENV:z.string(),
   DATABASE_URL: z.string(),

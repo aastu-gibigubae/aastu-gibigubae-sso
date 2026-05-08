@@ -36,7 +36,12 @@ export const emailTokenSchema = z.object({
   userId: z.string(),
   type: z.literal("EMAIL_VERIFICATION"),
 });
-
+export const passwordRequestSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email")
+    .transform((v) => v.toLowerCase()),
+});
 export const loginSchema = z.object({
   email: z
     .string()
