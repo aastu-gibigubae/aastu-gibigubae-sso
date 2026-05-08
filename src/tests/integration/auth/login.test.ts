@@ -156,7 +156,7 @@ describe.sequential("POST /api/v1/auth/login", () => {
     expect(res.statusCode).toBe(400);
   },10000);
 
-  test("should reset loginAttempts and lastLoginAt after successful login", async () => {
+  test("should reset loginAttempts after successful login", async () => {
     await prisma.user.update({
       where: { email: userEmail },
       data: {
@@ -170,8 +170,6 @@ describe.sequential("POST /api/v1/auth/login", () => {
     const updatedUser = await prisma.user.findUnique({
       where: { email: userEmail },
     });
-
     expect(updatedUser?.loginAttempts).toBe(0);
-    expect(updatedUser?.lastLoginAt).toBeNull();
   },10000);
 });

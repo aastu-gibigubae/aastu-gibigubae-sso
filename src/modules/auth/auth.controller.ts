@@ -383,7 +383,7 @@ export const login = async (
       throw errorService("User not found", 404);
     }
 
-    if (user.loginAttempts == 3 && user.lastLoginAt != null) {
+    if (user.loginAttempts >= 3 && user.lastLoginAt != null) {
       const now = new Date();
       const lastAttempt = new Date(user.lastLoginAt);
       const diffInMins = now.getTime() - lastAttempt.getTime();
@@ -450,7 +450,7 @@ export const login = async (
         email,
       },
       data: {
-        lastLoginAt: null,
+        lastLoginAt: new Date(),
         loginAttempts: 0,
       },
       select: {
