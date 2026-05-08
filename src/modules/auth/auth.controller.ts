@@ -550,6 +550,7 @@ export const PasswordResetRequestController = async (
           endpoint: "/auth/password-reset/request",
         },
       });
+      error.status = 400;
       return next(error);
     }
     next(err)
