@@ -51,7 +51,7 @@ const generateToken = () => {
   return tokenService.generateEmailVerifyToken(payload, options);
 };
 
-describe.sequential("POST /api/v1/auth/verify-email", () => {
+describe("POST /api/v1/auth/verify-email", () => {
   test("should verify email successfully and return tokens", async () => {
     const agent = request.agent(app);
     const token = generateToken();

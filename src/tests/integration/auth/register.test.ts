@@ -25,7 +25,7 @@ const createUser = (overrides: Partial<registerInput> = {}): registerInput => ({
   department: "softwareEngineering",
   ...overrides,
 });
-describe.sequential("POST api/v1/auth/register", () => {
+describe("POST api/v1/auth/register", () => {
   test("should return 201 number and email verification message", async () => {
     const body = createUser();
     const res = await request(app).post("/api/v1/auth/register").send(body);

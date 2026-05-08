@@ -53,7 +53,7 @@ const createLoginUser = (overrides = {}) => ({
   ...overrides,
 });
 
-describe.sequential("POST /api/v1/auth/login", () => {
+describe("POST /api/v1/auth/login", () => {
   test("should login successfully and return tokens + user", async () => {
     const res = await login(createLoginUser());
 
