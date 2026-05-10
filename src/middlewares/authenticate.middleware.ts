@@ -4,7 +4,7 @@ import tokenService from "../services/token.service.js";
 import { tokenType } from "../types/token.js";
 import { prisma } from "../config/db.js";
 
-const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -32,6 +32,7 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
       role: user.role,
       email: user.email,
     };
+    next()
   } catch (err) {
     next(err);
   }
