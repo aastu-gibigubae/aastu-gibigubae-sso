@@ -538,7 +538,7 @@ export const passwordResetRequestController = async (
       expiresIn:
         envConfig.PASSWORD_RESET_TOKEN_EXPIRY as SignOptions["expiresIn"],
     };
-    const token = tokenService.generateEmailVerifyToken(payload, options);
+    const token = tokenService.generatePasswordResetToken(payload, options);
     const verificationLink = `https://your-frontend.com/password-reset?token=${token}`;
 
     const html = passwordResetTemplate(
@@ -604,7 +604,7 @@ export const passwordVerify = async (
     const data = passwordVerifySchema.parse(req.body);
     const { newPassword, resetToken } = data;
 
-    const decoded = tokenService.verifyEmailToken(resetToken);
+    const decoded = tokenService.verifyPasswordToken(resetToken);
     const { userId, type } = passwordTokenSchema.parse(decoded);
     const user = await prisma.user.findUnique({
       where: {
@@ -616,7 +616,6 @@ export const passwordVerify = async (
     });
     if (!user) {
       await createAuditLog({
-        targetId: userId,
         targetRole: Role.user,
         action: "PASSWORD_RESET_FAILED",
         ipAddress: req.ip ?? "unknown",

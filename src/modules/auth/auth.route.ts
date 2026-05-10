@@ -6,5 +6,5 @@ authRouter.post("/register", register);
 authRouter.post("/verify-email",verifyEmail);
 authRouter.post("/login",login);
 authRouter.post("/password-reset/request",passwordResetRequestController)
-authRouter.post("/password-reset/confirm",passwordVerify);
+authRouter.post("/password-reset/verify",passwordVerify);
 export default authRouter;
