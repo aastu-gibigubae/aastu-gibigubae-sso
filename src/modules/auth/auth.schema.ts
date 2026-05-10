@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 import { Department } from "../../generated/enums.js";
 const departmentValues = Object.values(Department) as [string, ...string[]];
@@ -31,5 +30,32 @@ export const registerSchema = z.object({
   department: z.enum(departmentValues, {
     message: "Invalid department option",
   }),
+});
+
+export const emailTokenSchema = z.object({
+  userId: z.string(),
+  type: z.literal("EMAIL_VERIFICATION"),
+});
+export const passwordRequestSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email")
+    .transform((v) => v.toLowerCase()),
+});
+export const passwordTokenSchema = z.object({
+  userId: z.string(),
+  type: z.literal("PASSWORD_VERIFICATION"),
+});
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email")
+    .transform((v) => v.toLowerCase()),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  rememberMe: z.boolean(),
+});
+export const passwordVerifySchema = z.object({
+  newPassword:z.string().min(6,"Password must be at least 6 characters"),
+  resetToken: z.string(),
 });
 export type registerInput = z.input<typeof registerSchema>;
