@@ -42,6 +42,10 @@ export const passwordRequestSchema = z.object({
     .email("Invalid email")
     .transform((v) => v.toLowerCase()),
 });
+export const passwordTokenSchema = z.object({
+  userId: z.string(),
+  type: z.literal("PASSWORD_VERIFICATION"),
+});
 export const loginSchema = z.object({
   email: z
     .string()
@@ -49,5 +53,9 @@ export const loginSchema = z.object({
     .transform((v) => v.toLowerCase()),
   password: z.string().min(6, "Password must be at least 6 characters"),
   rememberMe: z.boolean(),
+});
+export const passwordVerifySchema = z.object({
+  newPassword:z.string().min(6,"Password must be at least 6 characters"),
+  resetToken: z.string(),
 });
 export type registerInput = z.input<typeof registerSchema>;

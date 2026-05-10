@@ -22,6 +22,13 @@ class TokenService {
       throw errorService("Verification link is invalid or has expired", 400);
     }
   }
+    verifyPasswordToken(token: string) {
+    try {
+      return jwt.verify(token, envConfig.PASSWORD_TOKEN_SECRET);
+    } catch (err) {
+      throw errorService("Password reset token is invalid or has expired", 400);
+    }
+  }
 }
 
 const tokenService = new TokenService();

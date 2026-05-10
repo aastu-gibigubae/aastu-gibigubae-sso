@@ -3,6 +3,8 @@ import {
   emailTokenSchema,
   loginSchema,
   passwordRequestSchema,
+  passwordTokenSchema,
+  passwordVerifySchema,
   registerSchema,
 } from "./auth.schema.js";
 import { success, ZodError } from "zod";
@@ -93,9 +95,7 @@ export const register = async (
 
         actorRole: Role.user,
         targetRole: Role.user,
-
         action: "USER_UPDATED_UNVERIFIED",
-
         actorEmail: email,
         actorFirstName: firstName,
         actorFatherName: fatherName,
@@ -373,7 +373,6 @@ export const login = async (
     let user;
     const data = loginSchema.parse(req.body);
     const { email, password, rememberMe } = data;
-    const passwordHash = await bcrypt.hash(password, 12);
     user = await prisma.user.findUnique({
       where: {
         email,
@@ -420,8 +419,9 @@ export const login = async (
       algorithm: "RS256",
     };
     const refreshTokenOptions: SignOptions = {
-      expiresIn:
-        envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"],
+      expiresIn: rememberMe
+        ? (envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"])
+        : (envConfig.REFRESH_TOKEN_EXPIRATION as SignOptions["expiresIn"]),
       algorithm: "RS256",
     };
     const accessTokenPayLoad = {
@@ -443,7 +443,7 @@ export const login = async (
 
     res.cookie("refresh-token", refreshToken, {
       ...cookieOptions,
-      maxAge: 1000 * 60 * 60 * 24 * 90,
+      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 90 : 1000 * 60 * 60 * 24 * 2,
     });
     user = await prisma.user.update({
       where: {
@@ -486,7 +486,7 @@ export const login = async (
   }
 };
 
-export const PasswordResetRequestController = async (
+export const passwordResetRequestController = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -500,9 +500,30 @@ export const PasswordResetRequestController = async (
       },
     });
     if (user == null) {
+      await createAuditLog({
+        action: "PASSWORD_RESET_REQUEST_FAILED",
+        actorEmail: email,
+        targetEmail: email,
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "user_not_found" },
+      });
       throw errorService("User not found", 404);
     }
     if (!user.isEmailVerified) {
+      await createAuditLog({
+        actorId: user.id,
+        targetId: user.id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        actorEmail: user.email,
+        targetEmail: user.email,
+        action: "PASSWORD_RESET_REQUEST_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "email_not_verified" },
+      });
       throw errorService(
         "Email not verified. Please verify your email or register again to receive a new verification email.",
         403,
@@ -511,7 +532,7 @@ export const PasswordResetRequestController = async (
     const userId = user.id;
     const payload = {
       userId,
-      type: "EMAIL_VERIFICATION",
+      type: "PASSWORD_VERIFICATION",
     };
     const options: SignOptions = {
       expiresIn:
@@ -530,7 +551,24 @@ export const PasswordResetRequestController = async (
       subject: "Reset Your AASTU GibiGubae Password",
       html,
     });
-
+    await createAuditLog({
+      actorId: user.id,
+      targetId: user.id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      actorEmail: user.email,
+      targetEmail: user.email,
+      actorFirstName: user.firstName,
+      targetFirstName: user.firstName,
+      actorFatherName: user.fatherName,
+      targetFatherName: user.fatherName,
+      actorStudentId: user.studentId,
+      targetStudentId: user.studentId,
+      action: "PASSWORD_RESET_REQUESTED",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: { type: "security_event", reason: "password_reset_email_sent" },
+    });
     return res.status(201).json({
       success: true,
       message: "Password reset instructions sent to your email",
@@ -553,6 +591,121 @@ export const PasswordResetRequestController = async (
       error.status = 400;
       return next(error);
     }
-    next(err)
+    next(err);
+  }
+};
+
+export const passwordVerify = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = passwordVerifySchema.parse(req.body);
+    const { newPassword, resetToken } = data;
+
+    const decoded = tokenService.verifyEmailToken(resetToken);
+    const { userId, type } = passwordTokenSchema.parse(decoded);
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        ...userSafeSelect,
+      },
+    });
+    if (!user) {
+      await createAuditLog({
+        targetId: userId,
+        targetRole: Role.user,
+        action: "PASSWORD_RESET_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "user_not_found" },
+      });
+      throw errorService("User not found", 404);
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: {
+        email: user.email,
+      },
+      data: {
+        passwordHash,
+      },
+    });
+    const accessTokenOptions: SignOptions = {
+      expiresIn: envConfig.ACCESS_TOKEN_EXPIRATION as SignOptions["expiresIn"],
+      algorithm: "RS256",
+    };
+    const refreshTokenOptions: SignOptions = {
+      expiresIn:
+        envConfig.REFRESH_TOKEN_EXPIRATION_REMEMBER_ME as SignOptions["expiresIn"],
+      algorithm: "RS256",
+    };
+    const accessTokenPayLoad = {
+      userId,
+      type: "ACCESS_TOKEN",
+    };
+    const refreshTokenPayLoad = {
+      userId,
+      type: "REFRESH_TOKEN",
+    };
+    const accessToken = tokenService.generateSecurityToken(
+      accessTokenPayLoad,
+      accessTokenOptions,
+    );
+    const refreshToken = tokenService.generateSecurityToken(
+      refreshTokenPayLoad,
+      refreshTokenOptions,
+    );
+
+    res.cookie("refresh-token", refreshToken, {
+      ...cookieOptions,
+      maxAge: 1000 * 60 * 60 * 24 * 90,
+    });
+    await createAuditLog({
+      actorId: user.id,
+      targetId: user.id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      actorEmail: user.email,
+      targetEmail: user.email,
+      actorFirstName: user.firstName,
+      targetFirstName: user.firstName,
+      actorFatherName: user.fatherName,
+      targetFatherName: user.fatherName,
+      actorStudentId: user.studentId,
+      targetStudentId: user.studentId,
+      action: "PASSWORD_RESET_SUCCESS",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: { type: "update", updatedFields: ["passwordHash"] },
+    });
+    res.status(201).json({
+      success: true,
+      message: "Password has been reset successfully.",
+      data: user,
+      accessToken,
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "PASSWORD_RESET_TOKEN_VERIFY_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "invalid_or_expired_reset_token",
+          endpoint: "/auth/password-reset/verify",
+        },
+      });
+      error.status = 400;
+      return next(error);
+    }
+    next(err);
   }
 };
