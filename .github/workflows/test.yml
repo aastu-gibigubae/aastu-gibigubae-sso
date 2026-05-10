@@ -41,6 +41,7 @@ jobs:
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
           JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
           EMAIL_TOKEN_SECRET: ${{ secrets.EMAIL_TOKEN_SECRET }}
+          PASSWORD_TOKEN_SECRET: ${{secrets.PASSWORD_TOKEN_SECRET}}
 
           # Token Expirations
           ACCESS_TOKEN_EXPIRATION: 15m
