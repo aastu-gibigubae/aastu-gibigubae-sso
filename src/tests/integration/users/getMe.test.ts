@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 
 import app from "../../../app.js";
 import { prisma } from "../../../config/db.js";
-import { Role } from "../../../generated/enums.js";
+import { Role } from "../../../generated/prisma/client.js";
 import { envConfig } from "../../../config/config.js";
 import tokenService from "../../../services/token.service.js";
 
@@ -21,7 +21,6 @@ beforeEach(async () => {
     data: {
       firstName: "Test",
       fatherName: "User",
-      email: "test@getme.com",
       passwordHash,
       phoneNumber: "0900000000",
       gender: "male",
@@ -29,7 +28,7 @@ beforeEach(async () => {
       admissionYear: 2025,
       department: "softwareEngineering",
       role: Role.user,
-      isEmailVerified: true,
+
     },
   });
   const accessTokenOptions: SignOptions = {

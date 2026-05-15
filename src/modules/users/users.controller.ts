@@ -3,7 +3,7 @@ import { errorService } from "../../services/error.service.js";
 import { prisma } from "../../config/db.js";
 import { userSafeSelect } from "../../services/db.select/user.select.js";
 import { createAuditLog } from "../../services/audit.service.js";
-import { Role } from "../../generated/enums.js";
+import { Role } from "../../generated/prisma/client.js";
 
 export const getMe = async (
   req: Request,
