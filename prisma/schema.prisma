@@ -47,15 +47,15 @@ model User {
   firstName         String
   fatherName        String
   grandFatherName   String?
-  email             String?     
+  email             String?
   christianName     String?
-  phoneNumber       String @unique
+  phoneNumber       String     @unique
   passwordHash      String
   role              Role
   permissions       String[]   @default([])
   gender            Gender
   admissionYear     Int
-  studentId         String     
+  studentId         String
   isAccountVerified Boolean    @default(false)
   isEmailVerified   Boolean    @default(false)
   dormitoryBlock    String?
@@ -74,24 +74,26 @@ model User {
 }
 
 model AuditLog {
-  id               String   @id @default(cuid())
-  actorId          String?
-  targetId         String?
-  actorRole        Role?
-  action           String
-  actorEmail       String?
-  actorFirstName   String?
-  actorFatherName  String?
-  targetFirstName  String?
-  targetFatherName String?
-  targetEmail      String?
-  actorStudentId   String?
-  targetStudentId  String?
-  deviceInfo       String?
-  ipAddress        String?
-  targetRole       Role?
-  changes          Json?
-  createdAt        DateTime @default(now())
+  id                String   @id @default(cuid())
+  actorId           String?
+  targetId          String?
+  actorRole         Role?
+  action            String
+  actorEmail        String?
+  actorPhoneNumber  String?
+  actorFirstName    String?
+  actorFatherName   String?
+  targetFirstName   String?
+  targetFatherName  String?
+  targetEmail       String?
+  targetPhoneNumber String?
+  actorStudentId    String?
+  targetStudentId   String?
+  deviceInfo        String?
+  ipAddress         String?
+  targetRole        Role?
+  changes           Json?
+  createdAt         DateTime @default(now())
 
   actor  User? @relation("ActorRelation", fields: [actorId], references: [id], onDelete: SetNull)
   target User? @relation("TargetRelation", fields: [targetId], references: [id], onDelete: SetNull)

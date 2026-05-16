@@ -1,4 +1,4 @@
-import { Role } from "../generated/enums.ts";
+import { Role } from "../generated/prisma/client.js";
 
 declare global {
   namespace Express {
@@ -6,7 +6,7 @@ declare global {
       user?: {
         id: string;
         role: Role;
-        email: string;
+        permissions: string[];
       };
     }
   }

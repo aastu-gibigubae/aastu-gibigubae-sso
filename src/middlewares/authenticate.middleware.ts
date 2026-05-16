@@ -3,8 +3,13 @@ import { errorService } from "../services/error.service.js";
 import tokenService from "../services/token.service.js";
 import { tokenType } from "../types/token.js";
 import { prisma } from "../config/db.js";
+import { Role } from "../generated/prisma/enums.js";
 
-export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -30,10 +35,48 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     req.user = {
       id: user.id,
       role: user.role,
-      email: user.email,
+      permissions: user.permissions,
     };
-    next()
+    next();
   } catch (err) {
     next(err);
   }
+};
+
+export const authorizeRoles = (...roles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user) {
+        throw errorService("Forbidden", 403);
+      }
+      if (!roles.includes(req.user.role)) {
+        throw errorService("Forbidden", 403);
+      }
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+};
+
+export const authorizePermissions = (...permissions: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user) {
+        throw errorService("Forbidden", 403);
+      }
+      if (req.user.role == Role.admin) {
+        return next();
+      }
+      const hasPermisson = permissions.every((permissions) =>
+        req.user?.permissions.includes(permissions),
+      );
+      if (!hasPermisson) {
+        throw errorService("Forbidden", 403);
+      }
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
 };

@@ -43,6 +43,16 @@ export const register = async (
       where: { phoneNumber },
     });
     if (existingUser) {
+      await createAuditLog({
+        action: "REGISTER_FAILED_USER_EXISTS",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "phone_number_already_exists",
+        },
+      });
       throw errorService("User with this phone number already exists", 409);
     }
 
@@ -104,10 +114,13 @@ export const register = async (
       actorFirstName: user.firstName,
       actorFatherName: user.fatherName,
       actorStudentId: user.studentId,
+      actorPhoneNumber: user.phoneNumber,
 
       targetFirstName: user.firstName,
       targetFatherName: user.fatherName,
       targetStudentId: user.studentId,
+      targetPhoneNumber: user.phoneNumber,
+
       ipAddress: req.ip ?? "unknown",
       deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
       changes: {
@@ -284,6 +297,13 @@ export const login = async (
       },
     });
     if (user == null) {
+      await createAuditLog({
+        action: "LOGIN_FAILED_USER_NOT_FOUND",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "user_not_found" },
+      });
       throw errorService("User not found", 404);
     }
 
@@ -309,6 +329,17 @@ export const login = async (
           loginAttempts: { increment: 1 },
           lastLoginAt: new Date(),
         },
+      });
+
+      await createAuditLog({
+        actorId: user.id,
+        targetId: user.id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "LOGIN_FAILED_WRONG_PASSWORD",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "invalid_password" },
       });
       throw errorService("Invalid phoneNumber or password", 401);
     }
@@ -339,7 +370,27 @@ export const login = async (
       refreshTokenPayLoad,
       refreshTokenOptions,
     );
+    await createAuditLog({
+      actorId: user.id,
+      targetId: user.id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      action: "LOGIN_SUCCESS",
 
+      actorFirstName: user.firstName,
+      actorFatherName: user.fatherName,
+      actorStudentId: user.studentId,
+      actorPhoneNumber: user.phoneNumber,
+
+      targetFirstName: user.firstName,
+      targetFatherName: user.fatherName,
+      targetStudentId: user.studentId,
+      targetPhoneNumber: user.phoneNumber,
+
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: { type: "auth_event", reason: "successful_login" },
+    });
     res.cookie("refresh-token", refreshToken, {
       ...cookieOptions,
       maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 90 : 1000 * 60 * 60 * 24 * 2,
