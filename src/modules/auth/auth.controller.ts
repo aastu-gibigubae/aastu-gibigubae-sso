@@ -99,10 +99,12 @@ export const register = async (
       refreshTokenPayLoad,
       refreshTokenOptions,
     );
-
+    const refreshTokenExpiry = rememberMe
+      ? 1000 * 60 * 60 * 24 * 90
+      : 1000 * 60 * 60 * 24 * 2;
     res.cookie("refresh-token", refreshToken, {
       ...cookieOptions,
-      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 90 : 1000 * 60 * 60 * 24 * 2,
+      maxAge: refreshTokenExpiry
     });
     await createAuditLog({
       actorId: user.id,
@@ -134,6 +136,15 @@ export const register = async (
           "department",
           "password",
         ],
+      },
+    });
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        ipAddress: req.ip ?? "unknown",
+        expiresAt: new Date(Date.now() + refreshTokenExpiry),
+        lastUsedAt: new Date(),
       },
     });
 
@@ -391,9 +402,22 @@ export const login = async (
       deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
       changes: { type: "auth_event", reason: "successful_login" },
     });
+    const refreshTokenExpiry = rememberMe
+      ? 1000 * 60 * 60 * 24 * 90
+      : 1000 * 60 * 60 * 24 * 2;
+
     res.cookie("refresh-token", refreshToken, {
       ...cookieOptions,
-      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 90 : 1000 * 60 * 60 * 24 * 2,
+      maxAge: refreshTokenExpiry,
+    });
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        ipAddress: req.ip ?? "unknown",
+        expiresAt: new Date(Date.now() + refreshTokenExpiry),
+        lastUsedAt: new Date(),
+      },
     });
     user = await prisma.user.update({
       where: {
