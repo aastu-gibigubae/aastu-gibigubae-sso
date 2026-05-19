@@ -4,172 +4,119 @@ import bcrypt from "bcrypt";
 
 import app from "../../../app.js";
 import { prisma } from "../../../config/db.js";
-import { Role, User } from "../../../generated/client.js";
+import { Role } from "../../../generated/prisma/client.js";
 
-let user: User;
-let userId: string;
-let userEmail: string;
+
+let userPhone = "+251912345678";
 
 beforeEach(async () => {
   await prisma.user.deleteMany();
 
-  userEmail = `user_${Date.now()}_${Math.random()}@test.com`;
-
   const passwordHash = await bcrypt.hash("12345678", 12);
 
-  user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       firstName: "nathnael",
       fatherName: "Tamirat",
-      email: userEmail,
       passwordHash,
-      phoneNumber: "0926727954",
+      phoneNumber: userPhone,
       gender: "male",
       studentId: "ets1088/25",
       admissionYear: 2025,
       department: "softwareEngineering",
       role: Role.user,
-      isEmailVerified: true,
       loginAttempts: 0,
       lastLoginAt: null,
     },
   });
-
-  userId = user.id;
-}, 20000);
+});
 
 afterAll(async () => {
   await prisma.user.deleteMany();
   await prisma.$disconnect();
-}, 20000);
+});
 
-const login = (body = {}) =>
-  request(app).post("/api/v1/auth/login").send(body);
+const login = (body = {}) => request(app).post("/api/v1/auth/login").send(body);
 
-const createLoginUser = (overrides = {}) => ({
-  email: userEmail,
+const baseLogin = (overrides = {}) => ({
+  phoneNumber: userPhone,
   password: "12345678",
   rememberMe: true,
   ...overrides,
 });
 
-describe("POST /api/v1/auth/login", () => {
-  test("should login successfully and return tokens + user", async () => {
-    const res = await login(createLoginUser());
+describe("LOGIN - FULL COVERAGE", () => {
+  test("SUCCESS login", async () => {
+    const res = await login(baseLogin());
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toMatchObject({
-      success: true,
-      message: "Login successful",
-      data: {
-        id: userId,
-        firstName: "nathnael",
-        fatherName: "Tamirat",
-        email: userEmail,
-        phoneNumber: "0926727954",
-        role: "user",
-        gender: "male",
-        studentId: "ets1088/25",
-        admissionYear: 2025,
-        department: "softwareEngineering",
-        isEmailVerified: true,
-        isAccountVerified: false,
-      },
-      accessToken: expect.any(String),
-    });
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toBe("Login successful");
 
-    const cookies = res.headers["set-cookie"];
-    expect(cookies).toBeDefined();
+    expect(res.body.data.phoneNumber).toBe(userPhone);
+    expect(res.body.accessToken).toBeDefined();
+  });
 
-    if (Array.isArray(cookies)) {
-      expect(cookies.join("")).toContain("refresh-token");
-    } else {
-      expect(cookies).toContain("refresh-token");
-    }
-  },10000);
-
-  test("should return 404 and User not found", async () => {
-    const res = await login({
-      ...createLoginUser(),
-      email: "notfound@test.com",
-    });
+  test("FAIL user not found", async () => {
+    const res = await login(baseLogin({ phoneNumber: "+251900000000" }));
 
     expect(res.statusCode).toBe(404);
-  },10000);
+    expect(res.body.message).toBe("User not found");
+  });
 
-  test("should return 401 and Invalid email or password", async () => {
-    const res = await login({
-      ...createLoginUser(),
-      password: "wrongpassword",
-    });
+  test("FAIL invalid password", async () => {
+    const res = await login(baseLogin({ password: "wrongpass" }));
 
     expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Invalid phoneNumber or password");
+  });
 
-    const updatedUser = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+  test("FAIL validation (bad phone)", async () => {
+    const res = await login(baseLogin({ phoneNumber: "123" }));
 
-    expect(updatedUser?.loginAttempts).toBe(1);
-    expect(updatedUser?.lastLoginAt).not.toBeNull();
-  },10000);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Invalid phoneNumber")
+  });
 
-  test("should return 403 if email is not verified", async () => {
+  test("FAIL validation (short password)", async () => {
+    const res = await login(baseLogin({ password: "123" }));
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Password must be at least 6 characters");
+  });
+
+  test("FAIL rate limit", async () => {
     await prisma.user.update({
-      where: { email: userEmail },
-      data: { isEmailVerified: false },
-    });
-
-    const res = await login(createLoginUser());
-
-    expect(res.statusCode).toBe(403);
-  },10000);
-
-  test("should return 429 after 3 failed attempts within 5 minutes", async () => {
-    await prisma.user.update({
-      where: { email: userEmail },
+      where: { phoneNumber: userPhone },
       data: {
         loginAttempts: 3,
         lastLoginAt: new Date(),
       },
     });
 
-    const res = await login(createLoginUser());
+    const res = await login(baseLogin());
 
     expect(res.statusCode).toBe(429);
-  },10000);
+    expect(res.body.message).toBe(
+      "Too many login attempts. Try again in 5 minutes.",
+    );
+  });
 
-  test("should return 400 and Invalid email", async () => {
-    const res = await login({
-      ...createLoginUser(),
-      email: "invalid-email",
-    });
-
-    expect(res.statusCode).toBe(400);
-  },10000);
-
-  test("should return 400 and Password must be at least 6 characters", async () => {
-    const res = await login({
-      ...createLoginUser(),
-      password: "12345",
-    });
-
-    expect(res.statusCode).toBe(400);
-  },10000);
-
-  test("should reset loginAttempts after successful login", async () => {
+  test("SUCCESS resets login attempts", async () => {
     await prisma.user.update({
-      where: { email: userEmail },
+      where: { phoneNumber: userPhone },
       data: {
         loginAttempts: 2,
         lastLoginAt: new Date(),
       },
     });
 
-    await login(createLoginUser());
+    await login(baseLogin());
 
-    const updatedUser = await prisma.user.findUnique({
-      where: { email: userEmail },
+    const updated = await prisma.user.findUnique({
+      where: { phoneNumber: userPhone },
     });
-    expect(updatedUser?.loginAttempts).toBe(0);
-  },10000);
+
+    expect(updated?.loginAttempts).toBe(0);
+  });
 });

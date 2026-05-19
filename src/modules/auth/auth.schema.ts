@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Department } from "../../generated/enums.js";
+import { Department } from "../../generated/prisma/enums.js";
+
 const departmentValues = Object.values(Department) as [string, ...string[]];
 
 export const registerSchema = z.object({
@@ -11,14 +12,13 @@ export const registerSchema = z.object({
     .string()
     .min(2, "Father name is too short")
     .transform((v) => v.toLowerCase()),
-  email: z
-    .string()
-    .email("Invalid email")
-    .transform((v) => v.toLowerCase()),
   password: z.string().min(6, "Password must be at least 6 characters"),
   phoneNumber: z
     .string()
-    .regex(/^\+?\d{8,15}$/, "Invalid phone Number")
+    .regex(
+      /^(?:\+2519\d{8}|\+2517\d{8}|09\d{8}|07\d{8})$/,
+      "Invalid phoneNumber",
+    )
     .transform((val) => (val.startsWith("0") ? "+251" + val.slice(1) : val)),
   gender: z.enum(["male", "female"], {
     message: "Gender must be either 'male' or 'female'",
@@ -30,32 +30,19 @@ export const registerSchema = z.object({
   department: z.enum(departmentValues, {
     message: "Invalid department option",
   }),
+  rememberMe: z.boolean(),
 });
 
-export const emailTokenSchema = z.object({
-  userId: z.string(),
-  type: z.literal("EMAIL_VERIFICATION"),
-});
-export const passwordRequestSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email")
-    .transform((v) => v.toLowerCase()),
-});
-export const passwordTokenSchema = z.object({
-  userId: z.string(),
-  type: z.literal("PASSWORD_VERIFICATION"),
-});
 export const loginSchema = z.object({
-  email: z
+  phoneNumber: z
     .string()
-    .email("Invalid email")
-    .transform((v) => v.toLowerCase()),
+    .regex(
+      /^(?:\+2519\d{8}|\+2517\d{8}|09\d{8}|07\d{8})$/,
+      "Invalid phoneNumber",
+    )
+    .transform((val) => (val.startsWith("0") ? "+251" + val.slice(1) : val)),
   password: z.string().min(6, "Password must be at least 6 characters"),
   rememberMe: z.boolean(),
 });
-export const passwordVerifySchema = z.object({
-  newPassword:z.string().min(6,"Password must be at least 6 characters"),
-  resetToken: z.string(),
-});
+
 export type registerInput = z.input<typeof registerSchema>;

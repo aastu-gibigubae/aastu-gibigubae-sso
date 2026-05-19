@@ -286,7 +286,7 @@ export type UserGroupByOutputType = {
   firstName: string
   fatherName: string
   grandFatherName: string | null
-  email: string
+  email: string | null
   christianName: string | null
   phoneNumber: string
   passwordHash: string
@@ -334,7 +334,7 @@ export type UserWhereInput = {
   firstName?: Prisma.StringFilter<"User"> | string
   fatherName?: Prisma.StringFilter<"User"> | string
   grandFatherName?: Prisma.StringNullableFilter<"User"> | string | null
-  email?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringNullableFilter<"User"> | string | null
   christianName?: Prisma.StringNullableFilter<"User"> | string | null
   phoneNumber?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
@@ -362,7 +362,7 @@ export type UserOrderByWithRelationInput = {
   firstName?: Prisma.SortOrder
   fatherName?: Prisma.SortOrder
   grandFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   christianName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -387,15 +387,15 @@ export type UserOrderByWithRelationInput = {
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  email?: string
+  phoneNumber?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   firstName?: Prisma.StringFilter<"User"> | string
   fatherName?: Prisma.StringFilter<"User"> | string
   grandFatherName?: Prisma.StringNullableFilter<"User"> | string | null
+  email?: Prisma.StringNullableFilter<"User"> | string | null
   christianName?: Prisma.StringNullableFilter<"User"> | string | null
-  phoneNumber?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   permissions?: Prisma.StringNullableListFilter<"User">
@@ -414,14 +414,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   actedLogs?: Prisma.AuditLogListRelationFilter
   receivedLogs?: Prisma.AuditLogListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
-}, "id" | "email">
+}, "id" | "phoneNumber">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   fatherName?: Prisma.SortOrder
   grandFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   christianName?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
@@ -454,7 +454,7 @@ export type UserScalarWhereWithAggregatesInput = {
   firstName?: Prisma.StringWithAggregatesFilter<"User"> | string
   fatherName?: Prisma.StringWithAggregatesFilter<"User"> | string
   grandFatherName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  email?: Prisma.StringWithAggregatesFilter<"User"> | string
+  email?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   christianName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   phoneNumber?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
@@ -479,7 +479,7 @@ export type UserCreateInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -507,7 +507,7 @@ export type UserUncheckedCreateInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -535,7 +535,7 @@ export type UserUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -563,7 +563,7 @@ export type UserUncheckedUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -591,7 +591,7 @@ export type UserCreateManyInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -616,7 +616,7 @@ export type UserUpdateManyMutationInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -641,7 +641,7 @@ export type UserUncheckedUpdateManyInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -862,7 +862,7 @@ export type UserCreateWithoutActedLogsInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -889,7 +889,7 @@ export type UserUncheckedCreateWithoutActedLogsInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -921,7 +921,7 @@ export type UserCreateWithoutReceivedLogsInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -948,7 +948,7 @@ export type UserUncheckedCreateWithoutReceivedLogsInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -991,7 +991,7 @@ export type UserUpdateWithoutActedLogsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1018,7 +1018,7 @@ export type UserUncheckedUpdateWithoutActedLogsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1056,7 +1056,7 @@ export type UserUpdateWithoutReceivedLogsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1083,7 +1083,7 @@ export type UserUncheckedUpdateWithoutReceivedLogsInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1110,7 +1110,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -1137,7 +1137,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   firstName: string
   fatherName: string
   grandFatherName?: string | null
-  email: string
+  email?: string | null
   christianName?: string | null
   phoneNumber: string
   passwordHash: string
@@ -1180,7 +1180,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1207,7 +1207,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   fatherName?: Prisma.StringFieldUpdateOperationsInput | string
   grandFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   christianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1404,7 +1404,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     firstName: string
     fatherName: string
     grandFatherName: string | null
-    email: string
+    email: string | null
     christianName: string | null
     phoneNumber: string
     passwordHash: string

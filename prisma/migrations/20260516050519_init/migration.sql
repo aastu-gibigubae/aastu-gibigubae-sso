@@ -13,7 +13,7 @@ CREATE TABLE "users" (
     "firstName" TEXT NOT NULL,
     "fatherName" TEXT NOT NULL,
     "grandFatherName" TEXT,
-    "email" TEXT NOT NULL,
+    "email" TEXT,
     "christianName" TEXT,
     "phoneNumber" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
@@ -43,11 +43,13 @@ CREATE TABLE "auditLogs" (
     "actorRole" "Role",
     "action" TEXT NOT NULL,
     "actorEmail" TEXT,
+    "actorPhoneNumber" TEXT,
     "actorFirstName" TEXT,
     "actorFatherName" TEXT,
     "targetFirstName" TEXT,
     "targetFatherName" TEXT,
     "targetEmail" TEXT,
+    "targetPhoneNumber" TEXT,
     "actorStudentId" TEXT,
     "targetStudentId" TEXT,
     "deviceInfo" TEXT,
@@ -74,7 +76,7 @@ CREATE TABLE "refreshTokens" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "users_phoneNumber_key" ON "users"("phoneNumber");
 
 -- AddForeignKey
 ALTER TABLE "auditLogs" ADD CONSTRAINT "auditLogs_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

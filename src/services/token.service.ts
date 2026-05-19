@@ -22,7 +22,15 @@ class TokenService {
       throw errorService("Verification link is invalid or has expired", 400);
     }
   }
-    verifyPasswordToken(token: string) {
+  verifySecurityToken(token: string) {
+    try {
+      return jwt.verify(token, envConfig.JWT_PUBLIC_KEY);
+    } catch (err) {
+      throw errorService("Authentication required", 401);
+    }
+  }
+
+  verifyPasswordToken(token: string) {
     try {
       return jwt.verify(token, envConfig.PASSWORD_TOKEN_SECRET);
     } catch (err) {

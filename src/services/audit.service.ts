@@ -1,5 +1,5 @@
 import { prisma } from "../config/db.js";
-import { Role } from "../generated/enums.js";
+import { Role } from "../generated/prisma/enums.js";
 
 interface AuditParams {
   actorId?: string;
@@ -14,11 +14,13 @@ interface AuditParams {
   actorFirstName?: string;
   actorFatherName?: string;
   actorStudentId?: string;
+  actorPhoneNumber?: string;
 
   targetEmail?: string;
   targetFirstName?: string;
   targetFatherName?: string;
   targetStudentId?: string;
+  targetPhoneNumber?: string;
 
   deviceInfo?: string;
   ipAddress?: string;
@@ -44,12 +46,14 @@ export const createAuditLog = async (data: AuditParams) => {
       actorFirstName: data.actorFirstName ?? null,
       actorFatherName: data.actorFatherName ?? null,
       actorStudentId: data.actorStudentId ?? null,
+      actorPhoneNumber: data.actorPhoneNumber ?? null,
 
       // Target info
       targetEmail: data.targetEmail ?? null,
       targetFirstName: data.targetFirstName ?? null,
       targetFatherName: data.targetFatherName ?? null,
       targetStudentId: data.targetStudentId ?? null,
+      targetPhoneNumber: data.targetPhoneNumber ?? null,
 
       // Metadata
       ipAddress: data.ipAddress ?? null,

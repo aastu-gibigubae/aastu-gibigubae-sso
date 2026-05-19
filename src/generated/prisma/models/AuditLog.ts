@@ -31,11 +31,13 @@ export type AuditLogMinAggregateOutputType = {
   actorRole: $Enums.Role | null
   action: string | null
   actorEmail: string | null
+  actorPhoneNumber: string | null
   actorFirstName: string | null
   actorFatherName: string | null
   targetFirstName: string | null
   targetFatherName: string | null
   targetEmail: string | null
+  targetPhoneNumber: string | null
   actorStudentId: string | null
   targetStudentId: string | null
   deviceInfo: string | null
@@ -51,11 +53,13 @@ export type AuditLogMaxAggregateOutputType = {
   actorRole: $Enums.Role | null
   action: string | null
   actorEmail: string | null
+  actorPhoneNumber: string | null
   actorFirstName: string | null
   actorFatherName: string | null
   targetFirstName: string | null
   targetFatherName: string | null
   targetEmail: string | null
+  targetPhoneNumber: string | null
   actorStudentId: string | null
   targetStudentId: string | null
   deviceInfo: string | null
@@ -71,11 +75,13 @@ export type AuditLogCountAggregateOutputType = {
   actorRole: number
   action: number
   actorEmail: number
+  actorPhoneNumber: number
   actorFirstName: number
   actorFatherName: number
   targetFirstName: number
   targetFatherName: number
   targetEmail: number
+  targetPhoneNumber: number
   actorStudentId: number
   targetStudentId: number
   deviceInfo: number
@@ -94,11 +100,13 @@ export type AuditLogMinAggregateInputType = {
   actorRole?: true
   action?: true
   actorEmail?: true
+  actorPhoneNumber?: true
   actorFirstName?: true
   actorFatherName?: true
   targetFirstName?: true
   targetFatherName?: true
   targetEmail?: true
+  targetPhoneNumber?: true
   actorStudentId?: true
   targetStudentId?: true
   deviceInfo?: true
@@ -114,11 +122,13 @@ export type AuditLogMaxAggregateInputType = {
   actorRole?: true
   action?: true
   actorEmail?: true
+  actorPhoneNumber?: true
   actorFirstName?: true
   actorFatherName?: true
   targetFirstName?: true
   targetFatherName?: true
   targetEmail?: true
+  targetPhoneNumber?: true
   actorStudentId?: true
   targetStudentId?: true
   deviceInfo?: true
@@ -134,11 +144,13 @@ export type AuditLogCountAggregateInputType = {
   actorRole?: true
   action?: true
   actorEmail?: true
+  actorPhoneNumber?: true
   actorFirstName?: true
   actorFatherName?: true
   targetFirstName?: true
   targetFatherName?: true
   targetEmail?: true
+  targetPhoneNumber?: true
   actorStudentId?: true
   targetStudentId?: true
   deviceInfo?: true
@@ -228,11 +240,13 @@ export type AuditLogGroupByOutputType = {
   actorRole: $Enums.Role | null
   action: string
   actorEmail: string | null
+  actorPhoneNumber: string | null
   actorFirstName: string | null
   actorFatherName: string | null
   targetFirstName: string | null
   targetFatherName: string | null
   targetEmail: string | null
+  targetPhoneNumber: string | null
   actorStudentId: string | null
   targetStudentId: string | null
   deviceInfo: string | null
@@ -270,11 +284,13 @@ export type AuditLogWhereInput = {
   actorRole?: Prisma.EnumRoleNullableFilter<"AuditLog"> | $Enums.Role | null
   action?: Prisma.StringFilter<"AuditLog"> | string
   actorEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  actorPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  targetPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deviceInfo?: Prisma.StringNullableFilter<"AuditLog"> | string | null
@@ -293,11 +309,13 @@ export type AuditLogOrderByWithRelationInput = {
   actorRole?: Prisma.SortOrderInput | Prisma.SortOrder
   action?: Prisma.SortOrder
   actorEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  actorPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   actorFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
   actorFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  targetPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   actorStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   targetStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceInfo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -319,11 +337,13 @@ export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
   actorRole?: Prisma.EnumRoleNullableFilter<"AuditLog"> | $Enums.Role | null
   action?: Prisma.StringFilter<"AuditLog"> | string
   actorEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  actorPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  targetPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deviceInfo?: Prisma.StringNullableFilter<"AuditLog"> | string | null
@@ -342,11 +362,13 @@ export type AuditLogOrderByWithAggregationInput = {
   actorRole?: Prisma.SortOrderInput | Prisma.SortOrder
   action?: Prisma.SortOrder
   actorEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  actorPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   actorFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
   actorFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetFirstName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetFatherName?: Prisma.SortOrderInput | Prisma.SortOrder
   targetEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  targetPhoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   actorStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   targetStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceInfo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -369,11 +391,13 @@ export type AuditLogScalarWhereWithAggregatesInput = {
   actorRole?: Prisma.EnumRoleNullableWithAggregatesFilter<"AuditLog"> | $Enums.Role | null
   action?: Prisma.StringWithAggregatesFilter<"AuditLog"> | string
   actorEmail?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+  actorPhoneNumber?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   actorFirstName?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   actorFatherName?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   targetFirstName?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   targetFatherName?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   targetEmail?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+  targetPhoneNumber?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   actorStudentId?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   targetStudentId?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   deviceInfo?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
@@ -388,11 +412,13 @@ export type AuditLogCreateInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -411,11 +437,13 @@ export type AuditLogUncheckedCreateInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -430,11 +458,13 @@ export type AuditLogUpdateInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -453,11 +483,13 @@ export type AuditLogUncheckedUpdateInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -474,11 +506,13 @@ export type AuditLogCreateManyInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -493,11 +527,13 @@ export type AuditLogUpdateManyMutationInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -514,11 +550,13 @@ export type AuditLogUncheckedUpdateManyInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -545,11 +583,13 @@ export type AuditLogCountOrderByAggregateInput = {
   actorRole?: Prisma.SortOrder
   action?: Prisma.SortOrder
   actorEmail?: Prisma.SortOrder
+  actorPhoneNumber?: Prisma.SortOrder
   actorFirstName?: Prisma.SortOrder
   actorFatherName?: Prisma.SortOrder
   targetFirstName?: Prisma.SortOrder
   targetFatherName?: Prisma.SortOrder
   targetEmail?: Prisma.SortOrder
+  targetPhoneNumber?: Prisma.SortOrder
   actorStudentId?: Prisma.SortOrder
   targetStudentId?: Prisma.SortOrder
   deviceInfo?: Prisma.SortOrder
@@ -566,11 +606,13 @@ export type AuditLogMaxOrderByAggregateInput = {
   actorRole?: Prisma.SortOrder
   action?: Prisma.SortOrder
   actorEmail?: Prisma.SortOrder
+  actorPhoneNumber?: Prisma.SortOrder
   actorFirstName?: Prisma.SortOrder
   actorFatherName?: Prisma.SortOrder
   targetFirstName?: Prisma.SortOrder
   targetFatherName?: Prisma.SortOrder
   targetEmail?: Prisma.SortOrder
+  targetPhoneNumber?: Prisma.SortOrder
   actorStudentId?: Prisma.SortOrder
   targetStudentId?: Prisma.SortOrder
   deviceInfo?: Prisma.SortOrder
@@ -586,11 +628,13 @@ export type AuditLogMinOrderByAggregateInput = {
   actorRole?: Prisma.SortOrder
   action?: Prisma.SortOrder
   actorEmail?: Prisma.SortOrder
+  actorPhoneNumber?: Prisma.SortOrder
   actorFirstName?: Prisma.SortOrder
   actorFatherName?: Prisma.SortOrder
   targetFirstName?: Prisma.SortOrder
   targetFatherName?: Prisma.SortOrder
   targetEmail?: Prisma.SortOrder
+  targetPhoneNumber?: Prisma.SortOrder
   actorStudentId?: Prisma.SortOrder
   targetStudentId?: Prisma.SortOrder
   deviceInfo?: Prisma.SortOrder
@@ -692,11 +736,13 @@ export type AuditLogCreateWithoutActorInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -713,11 +759,13 @@ export type AuditLogUncheckedCreateWithoutActorInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -742,11 +790,13 @@ export type AuditLogCreateWithoutTargetInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -763,11 +813,13 @@ export type AuditLogUncheckedCreateWithoutTargetInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -813,11 +865,13 @@ export type AuditLogScalarWhereInput = {
   actorRole?: Prisma.EnumRoleNullableFilter<"AuditLog"> | $Enums.Role | null
   action?: Prisma.StringFilter<"AuditLog"> | string
   actorEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  actorPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFirstName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetFatherName?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetEmail?: Prisma.StringNullableFilter<"AuditLog"> | string | null
+  targetPhoneNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   actorStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   targetStudentId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deviceInfo?: Prisma.StringNullableFilter<"AuditLog"> | string | null
@@ -849,11 +903,13 @@ export type AuditLogCreateManyActorInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -869,11 +925,13 @@ export type AuditLogCreateManyTargetInput = {
   actorRole?: $Enums.Role | null
   action: string
   actorEmail?: string | null
+  actorPhoneNumber?: string | null
   actorFirstName?: string | null
   actorFatherName?: string | null
   targetFirstName?: string | null
   targetFatherName?: string | null
   targetEmail?: string | null
+  targetPhoneNumber?: string | null
   actorStudentId?: string | null
   targetStudentId?: string | null
   deviceInfo?: string | null
@@ -888,11 +946,13 @@ export type AuditLogUpdateWithoutActorInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -909,11 +969,13 @@ export type AuditLogUncheckedUpdateWithoutActorInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -929,11 +991,13 @@ export type AuditLogUncheckedUpdateManyWithoutActorInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -948,11 +1012,13 @@ export type AuditLogUpdateWithoutTargetInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -969,11 +1035,13 @@ export type AuditLogUncheckedUpdateWithoutTargetInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -989,11 +1057,13 @@ export type AuditLogUncheckedUpdateManyWithoutTargetInput = {
   actorRole?: Prisma.NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
   action?: Prisma.StringFieldUpdateOperationsInput | string
   actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFirstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetFatherName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetPhoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1012,11 +1082,13 @@ export type AuditLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   actorRole?: boolean
   action?: boolean
   actorEmail?: boolean
+  actorPhoneNumber?: boolean
   actorFirstName?: boolean
   actorFatherName?: boolean
   targetFirstName?: boolean
   targetFatherName?: boolean
   targetEmail?: boolean
+  targetPhoneNumber?: boolean
   actorStudentId?: boolean
   targetStudentId?: boolean
   deviceInfo?: boolean
@@ -1035,11 +1107,13 @@ export type AuditLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   actorRole?: boolean
   action?: boolean
   actorEmail?: boolean
+  actorPhoneNumber?: boolean
   actorFirstName?: boolean
   actorFatherName?: boolean
   targetFirstName?: boolean
   targetFatherName?: boolean
   targetEmail?: boolean
+  targetPhoneNumber?: boolean
   actorStudentId?: boolean
   targetStudentId?: boolean
   deviceInfo?: boolean
@@ -1058,11 +1132,13 @@ export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   actorRole?: boolean
   action?: boolean
   actorEmail?: boolean
+  actorPhoneNumber?: boolean
   actorFirstName?: boolean
   actorFatherName?: boolean
   targetFirstName?: boolean
   targetFatherName?: boolean
   targetEmail?: boolean
+  targetPhoneNumber?: boolean
   actorStudentId?: boolean
   targetStudentId?: boolean
   deviceInfo?: boolean
@@ -1081,11 +1157,13 @@ export type AuditLogSelectScalar = {
   actorRole?: boolean
   action?: boolean
   actorEmail?: boolean
+  actorPhoneNumber?: boolean
   actorFirstName?: boolean
   actorFatherName?: boolean
   targetFirstName?: boolean
   targetFatherName?: boolean
   targetEmail?: boolean
+  targetPhoneNumber?: boolean
   actorStudentId?: boolean
   targetStudentId?: boolean
   deviceInfo?: boolean
@@ -1095,7 +1173,7 @@ export type AuditLogSelectScalar = {
   createdAt?: boolean
 }
 
-export type AuditLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "actorId" | "targetId" | "actorRole" | "action" | "actorEmail" | "actorFirstName" | "actorFatherName" | "targetFirstName" | "targetFatherName" | "targetEmail" | "actorStudentId" | "targetStudentId" | "deviceInfo" | "ipAddress" | "targetRole" | "changes" | "createdAt", ExtArgs["result"]["auditLog"]>
+export type AuditLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "actorId" | "targetId" | "actorRole" | "action" | "actorEmail" | "actorPhoneNumber" | "actorFirstName" | "actorFatherName" | "targetFirstName" | "targetFatherName" | "targetEmail" | "targetPhoneNumber" | "actorStudentId" | "targetStudentId" | "deviceInfo" | "ipAddress" | "targetRole" | "changes" | "createdAt", ExtArgs["result"]["auditLog"]>
 export type AuditLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   actor?: boolean | Prisma.AuditLog$actorArgs<ExtArgs>
   target?: boolean | Prisma.AuditLog$targetArgs<ExtArgs>
@@ -1122,11 +1200,13 @@ export type $AuditLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     actorRole: $Enums.Role | null
     action: string
     actorEmail: string | null
+    actorPhoneNumber: string | null
     actorFirstName: string | null
     actorFatherName: string | null
     targetFirstName: string | null
     targetFatherName: string | null
     targetEmail: string | null
+    targetPhoneNumber: string | null
     actorStudentId: string | null
     targetStudentId: string | null
     deviceInfo: string | null
@@ -1565,11 +1645,13 @@ export interface AuditLogFieldRefs {
   readonly actorRole: Prisma.FieldRef<"AuditLog", 'Role'>
   readonly action: Prisma.FieldRef<"AuditLog", 'String'>
   readonly actorEmail: Prisma.FieldRef<"AuditLog", 'String'>
+  readonly actorPhoneNumber: Prisma.FieldRef<"AuditLog", 'String'>
   readonly actorFirstName: Prisma.FieldRef<"AuditLog", 'String'>
   readonly actorFatherName: Prisma.FieldRef<"AuditLog", 'String'>
   readonly targetFirstName: Prisma.FieldRef<"AuditLog", 'String'>
   readonly targetFatherName: Prisma.FieldRef<"AuditLog", 'String'>
   readonly targetEmail: Prisma.FieldRef<"AuditLog", 'String'>
+  readonly targetPhoneNumber: Prisma.FieldRef<"AuditLog", 'String'>
   readonly actorStudentId: Prisma.FieldRef<"AuditLog", 'String'>
   readonly targetStudentId: Prisma.FieldRef<"AuditLog", 'String'>
   readonly deviceInfo: Prisma.FieldRef<"AuditLog", 'String'>
