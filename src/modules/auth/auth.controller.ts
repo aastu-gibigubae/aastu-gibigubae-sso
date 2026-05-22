@@ -915,7 +915,7 @@ export const updatePassword = async (
       action: "PASSWORD_UPDATED_SUCCESSFULLY",
       ipAddress: req.ip ?? "unknown",
       deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
-      changes: { type: "security_event", reason: "password_reset_email_sent" },
+      changes: { type: "security_event", reason: "password_updated_successfully" },
     });
     return res.status(200).json({
       success: true,
