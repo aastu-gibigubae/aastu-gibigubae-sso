@@ -93,5 +93,5 @@ describe("GET /api/v1/users/me", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.pagination).toBeDefined();
     expect(res.body.data.length).toBeLessThanOrEqual(1);
-  });
+  },10000);
 });

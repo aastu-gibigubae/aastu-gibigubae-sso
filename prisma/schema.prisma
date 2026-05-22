@@ -106,6 +106,7 @@ model RefreshToken {
   userId     String
   deviceInfo String?
   ipAddress  String?
+  tokenHash  String   @unique
   expiresAt  DateTime
   lastUsedAt DateTime
   createdAt  DateTime @default(now())

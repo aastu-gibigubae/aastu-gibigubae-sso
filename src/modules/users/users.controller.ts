@@ -3,8 +3,15 @@ import { errorService } from "../../services/error.service.js";
 import { prisma } from "../../config/db.js";
 import { userSafeSelect } from "../../services/db.select/user.select.js";
 import { createAuditLog } from "../../services/audit.service.js";
-import { Role } from "../../generated/prisma/client.js";
+import { Prisma, Role } from "../../generated/prisma/client.js";
 import { ZodError } from "zod";
+import { emailSchema, updateProfileSchema } from "./users.schema.js";
+import { AppError } from "../../types/error.js";
+import tokenService from "../../services/token.service.js";
+import { emailVerificationTemplate } from "../../templates/emailVerification.js";
+import { sendEmail } from "../../utils/mailer.js";
+import { SignOptions } from "jsonwebtoken";
+import { envConfig } from "../../config/config.js";
 
 export const getMe = async (
   req: Request,
@@ -129,7 +136,7 @@ export const getAll = async (
       }),
       prisma.user.count(),
     ]);
-    const totalPages =  Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / limit);
     await createAuditLog({
       actorId: req.user.id,
       actorRole: Role.user,
@@ -154,7 +161,7 @@ export const getAll = async (
         total,
         totalPages,
         hasPreviousPage: page > 1,
-        hasNextPage: page < totalPages
+        hasNextPage: page < totalPages,
       },
     });
   } catch (err) {
@@ -170,6 +177,226 @@ export const getAll = async (
           error: (err as Error).message,
         },
       });
+    }
+    next(err);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      await createAuditLog({
+        action: "UPDATE_PROFILE_FAILED_UNAUTHENTICATED",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "missing_auth_user" },
+      });
+
+      throw errorService("Authentication required", 401);
+    }
+
+    const { id } = req.user;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser) {
+      await createAuditLog({
+        actorId: id,
+        targetId: id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "UPDATE_PROFILE_FAILED_USER_NOT_FOUND",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "read", reason: "user_not_found" },
+      });
+
+      throw errorService("User not found", 404);
+    }
+
+    const data = updateProfileSchema.parse(req.body);
+
+    const updateData: Prisma.UserUpdateInput = {};
+
+    if (data.firstName) updateData.firstName = data.firstName;
+    if (data.fatherName) updateData.fatherName = data.fatherName;
+    if (data.grandFatherName) updateData.grandFatherName = data.grandFatherName;
+    if (data.christianName) updateData.christianName = data.christianName;
+
+    if (data.phoneNumber) updateData.phoneNumber = data.phoneNumber;
+    if (data.gender) updateData.gender = data.gender;
+    if (data.department) updateData.department = data.department;
+
+    if (data.studentId) {
+      updateData.studentId = data.studentId;
+      updateData.admissionYear = parseInt("20" + data.studentId.split("/")[1]);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: updateData,
+      select: {
+        ...userSafeSelect,
+      },
+    });
+
+    await createAuditLog({
+      actorId: id,
+      targetId: id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      action: "PROFILE_UPDATED_SUCCESSFULLY",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: {
+        type: "update",
+        updatedFields: Object.keys(updateData),
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "PASSWORD_UPDATE_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "email_delivery_failed",
+          endpoint: "/auth/password-reset/request",
+        },
+      });
+      error.status = 400;
+      return next(error);
+    }
+    next(err);
+  }
+};
+export const updateEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      await createAuditLog({
+        action: "UPDATE_EMAIIL_FAILED_UNAUTHENTICATED",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "missing_auth_user" },
+      });
+
+      throw errorService("Authentication required", 401);
+    }
+
+    const { id } = req.user;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser) {
+      await createAuditLog({
+        actorId: id,
+        targetId: id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "UPDATE_EMAIL_FAILED_USER_NOT_FOUND",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "read", reason: "user_not_found" },
+      });
+
+      throw errorService("User not found", 404);
+    }
+
+    const { email } = emailSchema.parse(req.body);
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        isEmailVerified: false,
+        email,
+      },
+      select: {
+        ...userSafeSelect,
+      },
+    });
+    let userId = existingUser.id;
+    const payload = {
+      userId,
+      type: "EMAIL_VERIFICATION",
+    };
+    const options: SignOptions = {
+      expiresIn:
+        envConfig.EMAIL_VERIFICATION_EXPIRY as SignOptions["expiresIn"],
+    };
+    let token = tokenService.generateEmailVerifyToken(payload, options);
+    let verificationLink = `https://your-frontend.com/verify-email?token=${token}`;
+
+    let html = emailVerificationTemplate(
+      existingUser.firstName,
+      verificationLink,
+      // "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
+    );
+    await sendEmail({
+      to: email,
+      subject: "Verify your AASTU GibiGubae account",
+      html,
+    });
+
+    await createAuditLog({
+      actorId: id,
+      targetId: id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      action: "VERIFICATION_EMAIL_SENT_SUCCESSFULLY",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: {
+        type: "update",
+        updatedFields: email,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "EMAIL_UPDATE_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "email_delivery_failed",
+          endpoint: "/auth/password-reset/request",
+        },
+      });
+      error.status = 400;
+      return next(error);
     }
     next(err);
   }

@@ -67,6 +67,7 @@ CREATE TABLE "refreshTokens" (
     "userId" TEXT NOT NULL,
     "deviceInfo" TEXT,
     "ipAddress" TEXT,
+    "tokenHash" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "lastUsedAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -77,6 +78,9 @@ CREATE TABLE "refreshTokens" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_phoneNumber_key" ON "users"("phoneNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "refreshTokens_tokenHash_key" ON "refreshTokens"("tokenHash");
 
 -- AddForeignKey
 ALTER TABLE "auditLogs" ADD CONSTRAINT "auditLogs_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

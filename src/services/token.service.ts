@@ -4,12 +4,16 @@ import { tokenType } from "../types/token.js";
 import { AppError } from "../types/error.js";
 import { App } from "supertest/types.js";
 import { errorService } from "./error.service.js";
+import * as crypto from "crypto";
 class TokenService {
   generateEmailVerifyToken(payload: tokenType, options: SignOptions) {
     return jwt.sign(payload, envConfig.EMAIL_TOKEN_SECRET, options);
   }
   generatePasswordResetToken(payload: tokenType, options: SignOptions) {
     return jwt.sign(payload, envConfig.PASSWORD_TOKEN_SECRET, options);
+  }
+  generateHashToken(token: string) {
+    return crypto.createHash("sha256").update(token).digest("hex");
   }
   generateSecurityToken(payload: tokenType, options: SignOptions) {
     return jwt.sign(payload, envConfig.JWT_PRIVATE_KEY, options);
@@ -22,6 +26,7 @@ class TokenService {
       throw errorService("Verification link is invalid or has expired", 400);
     }
   }
+
   verifySecurityToken(token: string) {
     try {
       return jwt.verify(token, envConfig.JWT_PUBLIC_KEY);
