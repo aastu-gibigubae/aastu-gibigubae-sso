@@ -56,6 +56,10 @@ export const passwordTokenSchema = z.object({
   userId: z.string(),
   type: z.literal("PASSWORD_VERIFICATION")
 })
+export const updatePasswordSchema = z.object({
+   oldPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+})
 
 export const emailTokenSchema = z.object({
   userId: z.string(),

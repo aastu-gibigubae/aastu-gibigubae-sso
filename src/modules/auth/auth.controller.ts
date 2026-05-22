@@ -6,6 +6,7 @@ import {
   passwordTokenSchema,
   passwordVerifySchema,
   registerSchema,
+  updatePasswordSchema,
 } from "./auth.schema.js";
 import { ZodError } from "zod";
 import { SignOptions } from "jsonwebtoken";
@@ -825,5 +826,119 @@ export const passwordVerify = async (
       return next(error);
     }
     next(err);
+  }
+};
+
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      await createAuditLog({
+        action: "GET_ME_FAILED_UNAUTHENTICATED",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "missing_auth_user",
+        },
+      });
+
+      throw errorService("Authentication required", 401);
+    }
+
+    const { id } = req.user;
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      await createAuditLog({
+        actorId: id,
+        targetId: id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "UPDATE_PASSWORD_FAILED_USER_NOT_FOUND",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "read",
+          reason: "user_not_found",
+        },
+      });
+
+      throw errorService("User not found", 404);
+    }
+    const data = updatePasswordSchema.parse(req.body);
+    const { oldPassword, newPassword } = data;
+    const isValidPassword = await bcrypt.compare(
+      oldPassword,
+      user.passwordHash,
+    );
+    if (!isValidPassword) {
+      await createAuditLog({
+        actorId: user.id,
+        targetId: user.id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "UPDATE_PASSWORD_FAILED_WRONG_PASSWORD",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "invalid_password" },
+      });
+      throw errorService("Invalid phoneNumber or password", 401);
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        passwordHash,
+      },
+    });
+    await createAuditLog({
+      actorId: user.id,
+      targetId: user.id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      actorFirstName: user.firstName,
+      targetFirstName: user.firstName,
+      actorFatherName: user.fatherName,
+      targetFatherName: user.fatherName,
+      actorStudentId: user.studentId,
+      targetStudentId: user.studentId,
+      action: "PASSWORD_UPDATED_SUCCESSFULLY",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: { type: "security_event", reason: "password_reset_email_sent" },
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successful",
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "PASSWORD_UPDATE_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "email_delivery_failed",
+          endpoint: "/auth/password-reset/request",
+        },
+      });
+      error.status = 400;
+      return next(error);
+    }
+    return next(err);
   }
 };
