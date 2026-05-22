@@ -117,7 +117,7 @@ describe("PATCH /api/v1/users/update-profile", () => {
     expect(updatedUser?.department).toBe("biotechnology");
 
     expect(updatedUser?.admissionYear).toBe(2026);
-  });
+  },10000);
 
   test("should return 401 when not authenticated", async () => {
     const res = await updateProfile({

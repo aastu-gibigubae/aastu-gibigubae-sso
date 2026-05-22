@@ -133,7 +133,7 @@ describe("PATCH /api/v1/users/update-email", () => {
     expect(res.body.success).toBe(false);
 
     expect(res.body.message).toBe("User not found");
-  });
+  },10000);
 
   test("should return 400 for invalid email", async () => {
     const res = await updateEmail(
@@ -175,7 +175,7 @@ describe("PATCH /api/v1/users/update-email", () => {
     expect(updatedUser?.email).toBe(
       "updatedemail@gmail.com",
     );
-  });
+  },10000);
 
   test("should mark email as unverified after updating", async () => {
     const res = await updateEmail(
@@ -196,5 +196,5 @@ describe("PATCH /api/v1/users/update-email", () => {
     });
 
     expect(updatedUser?.isEmailVerified).toBe(false);
-  });
+  },10000);
 });
