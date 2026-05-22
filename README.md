@@ -75,24 +75,44 @@ src/
 prisma/
 ├── schema.prisma        # Data model definitions
 └── migrations/          # Migration history
+
+**Get User By ID Response** (200):
+```json
+{
+  "success": true,
+  "message": "User fetched successfully",
+  "data": {
+    "id": "user_id",
+    "firstName": "John",
+    "fatherName": "Ahmed",
+    "email": "john@example.com",
+    "phoneNumber": "+251900000000",
+    "studentId": "STU001",
+    "role": "user",
+    "department": "softwareEngineering",
+    "admissionYear": 2021,
+    "isEmailVerified": true
+  }
+}
 ```
 
-### Architecture Principles
+**Update Profile Response** (200):
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": { ... }
+}
+```
 
-1. **Modular Design**
-   - Each module (auth, users) is self-contained with its own controller, routes, and schemas
-   - Services are decoupled from controllers for reusability
-
-2. **Separation of Concerns**
-   - Controllers: Handle HTTP requests/responses
-   - Services: Contain business logic
-   - Middlewares: Cross-cutting concerns (auth, error handling)
-   - Database layer: Isolated through Prisma
-
-3. **Service-Driven Architecture**
-   - Core services (token, audit, error) are centralized and reusable
-   - Database interactions flow through Prisma client
-   - Validation happens at schema layer (Zod)
+**Update Email Response** (200):
+```json
+{
+  "success": true,
+  "message": "Verification email sent successfully",
+  "data": { ... }
+}
+```
 4. **Request Lifecycle**
 
    ```
@@ -227,6 +247,7 @@ Authorization: Bearer {ACCESS_TOKEN}
 |--------|----------|-------------|-----------|---------------------------|
 | GET | `/me` | Get current user profile | **Yes** | None |
 | GET | `/` | Get all users (paginated) | **Yes** | admin, subAdmin with "SEE-USERS" permission |
+| GET | `/:id` | Get user by ID | **Yes** | admin, subAdmin |
 | PATCH | `/update-profile` | Update user profile | **Yes** | None |
 | PATCH | `/update-email` | Update user email | **Yes** | None |
 
