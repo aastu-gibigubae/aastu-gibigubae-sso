@@ -33,7 +33,8 @@ AASTU GibiGubae SSO is an internal backend authentication and user management se
 - **ORM**: Prisma (PostgreSQL)
 - **Authentication**: JWT (JSON Web Tokens)
 - **Testing**: Vitest + Supertest
-- **Security**: Helmet, CORS, bcrypt, rate limiting
+- **Security**: Helmet, CORS, bcrypt
+- **Email**: Nodemailer (SMTP-based)
 
 ---
 
