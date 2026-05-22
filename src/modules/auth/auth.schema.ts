@@ -45,4 +45,20 @@ export const loginSchema = z.object({
   rememberMe: z.boolean(),
 });
 
+export const passwordRequestSchema = z.object({
+  email: z.string().trim().email({ message: "Invalid email" }),
+});
+export const passwordVerifySchema = z.object({
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  resetToken: z.string(),
+});
+export const passwordTokenSchema = z.object({
+  userId: z.string(),
+  type: z.literal("PASSWORD_VERIFICATION")
+})
+
+export const emailTokenSchema = z.object({
+  userId: z.string(),
+  type: z.literal("EMAIL_VERIFICATION"),
+});
 export type registerInput = z.input<typeof registerSchema>;

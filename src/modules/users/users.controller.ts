@@ -174,3 +174,10 @@ export const getAll = async (
     next(err);
   }
 };
+export const getUpdate = async(req:Request,res:Response,next:NextFunction)=>{
+  try{
+
+  }catch(err){
+    return next(err);
+  }
+}
