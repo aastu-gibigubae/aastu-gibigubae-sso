@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAll, getMe, updateEmail, updateProfile } from "./users.controller.js";
+import { getAll, getMe, getUser, updateEmail, updateProfile } from "./users.controller.js";
 import {
   authenticate,
   authorizePermissions,
@@ -16,6 +16,7 @@ userRouter.get(
   authorizePermissions("SEE-USERS"),
   getAll,
 );
+userRouter.get("/:id", authenticate,authorizeRoles(Role.admin, Role.subAdmin), getUser);
 userRouter.patch("/update-profile", authenticate, updateProfile);
 userRouter.patch("/update-email",authenticate,updateEmail);
 

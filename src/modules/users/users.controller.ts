@@ -181,6 +181,94 @@ export const getAll = async (
     next(err);
   }
 };
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      await createAuditLog({
+        action: "GET_USER_FAILED_UNAUTHENTICATED",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "missing_auth_user",
+        },
+      });
+
+      throw errorService("Authentication required", 401);
+    }
+
+  const userId = Array.isArray(req.params.id)
+    ? req.params.id[0]
+    : req.params.id;
+
+    if (!userId) {
+      throw errorService("User ID is required", 400);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        ...userSafeSelect,
+      },
+    });
+
+    if (!user) {
+      await createAuditLog({
+        actorId: req.user.id,
+        actorRole: Role.user,
+        action: "GET_USER_NOT_FOUND",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "read_error",
+          userId,
+          reason: "user_not_found",
+        },
+      });
+
+      throw errorService("User not found", 404);
+    }
+
+    await createAuditLog({
+      actorId: req.user.id,
+      actorRole: Role.user,
+      action: "GET_USER_SUCCESS",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: {
+        type: "read",
+        userId,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "User fetched successfully",
+      data: user,
+    });
+  } catch (err) {
+    if (req.user) {
+      await createAuditLog({
+        actorId: req.user.id,
+        actorRole: Role.user,
+        action: "GET_USER_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "error_event",
+          error: (err as Error).message,
+        },
+      });
+    }
+
+    return next(err);
+  }
+};
 
 export const updateProfile = async (
   req: Request,
