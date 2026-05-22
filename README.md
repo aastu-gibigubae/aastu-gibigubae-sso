@@ -94,6 +94,7 @@ prisma/
    - Database interactions flow through Prisma client
    - Validation happens at schema layer (Zod)
 4. **Request Lifecycle**
+
    ```
    HTTP Request
       ↓
