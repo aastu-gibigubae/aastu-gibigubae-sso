@@ -30,3 +30,7 @@ export const updateProfileSchema = z.object({
     .transform((v) => v.toLowerCase())
     .optional(),
 });
+
+export const emailSchema = z.object({
+  email: z.string().trim().email({ message: "Invalid email" }),
+});

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAll, getMe, updateProfile } from "./users.controller.js";
+import { getAll, getMe, updateEmail, updateProfile } from "./users.controller.js";
 import {
   authenticate,
   authorizePermissions,
@@ -17,5 +17,6 @@ userRouter.get(
   getAll,
 );
 userRouter.patch("/update-profile", authenticate, updateProfile);
+userRouter.patch("/update-email",authenticate,updateEmail);
 
 export default userRouter;

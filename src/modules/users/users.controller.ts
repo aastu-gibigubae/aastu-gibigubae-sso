@@ -5,8 +5,13 @@ import { userSafeSelect } from "../../services/db.select/user.select.js";
 import { createAuditLog } from "../../services/audit.service.js";
 import { Prisma, Role } from "../../generated/prisma/client.js";
 import { ZodError } from "zod";
-import { updateProfileSchema } from "./users.schema.js";
+import { emailSchema, updateProfileSchema } from "./users.schema.js";
 import { AppError } from "../../types/error.js";
+import tokenService from "../../services/token.service.js";
+import { emailVerificationTemplate } from "../../templates/emailVerification.js";
+import { sendEmail } from "../../utils/mailer.js";
+import { SignOptions } from "jsonwebtoken";
+import { envConfig } from "../../config/config.js";
 
 export const getMe = async (
   req: Request,
@@ -268,6 +273,120 @@ export const updateProfile = async (
       );
       await createAuditLog({
         action: "PASSWORD_UPDATE_FAILED",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: {
+          type: "security_event",
+          reason: "email_delivery_failed",
+          endpoint: "/auth/password-reset/request",
+        },
+      });
+      error.status = 400;
+      return next(error);
+    }
+    next(err);
+  }
+};
+export const updateEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      await createAuditLog({
+        action: "UPDATE_EMAIIL_FAILED_UNAUTHENTICATED",
+        targetRole: Role.user,
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "security_event", reason: "missing_auth_user" },
+      });
+
+      throw errorService("Authentication required", 401);
+    }
+
+    const { id } = req.user;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser) {
+      await createAuditLog({
+        actorId: id,
+        targetId: id,
+        actorRole: Role.user,
+        targetRole: Role.user,
+        action: "UPDATE_EMAIL_FAILED_USER_NOT_FOUND",
+        ipAddress: req.ip ?? "unknown",
+        deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+        changes: { type: "read", reason: "user_not_found" },
+      });
+
+      throw errorService("User not found", 404);
+    }
+
+    const { email } = emailSchema.parse(req.body);
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        isEmailVerified: false,
+        email,
+      },
+      select: {
+        ...userSafeSelect,
+      },
+    });
+    let userId = existingUser.id;
+    const payload = {
+      userId,
+      type: "EMAIL_VERIFICATION",
+    };
+    const options: SignOptions = {
+      expiresIn:
+        envConfig.EMAIL_VERIFICATION_EXPIRY as SignOptions["expiresIn"],
+    };
+    let token = tokenService.generateEmailVerifyToken(payload, options);
+    let verificationLink = `https://your-frontend.com/verify-email?token=${token}`;
+
+    let html = emailVerificationTemplate(
+      existingUser.firstName,
+      verificationLink,
+      // "https://res.cloudinary.com/dgwhbsdqc/image/upload/v1777199587/aastugibgubaeLogo_lzneun.jpg",
+    );
+    await sendEmail({
+      to: email,
+      subject: "Verify your AASTU GibiGubae account",
+      html,
+    });
+
+    await createAuditLog({
+      actorId: id,
+      targetId: id,
+      actorRole: Role.user,
+      targetRole: Role.user,
+      action: "VERIFICATION_EMAIL_SENT_SUCCESSFULLY",
+      ipAddress: req.ip ?? "unknown",
+      deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
+      changes: {
+        type: "update",
+        updatedFields: email,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const error: AppError = new Error(
+        err.issues.map((e) => e.message).join(", "),
+      );
+      await createAuditLog({
+        action: "EMAIL_UPDATE_FAILED",
         ipAddress: req.ip ?? "unknown",
         deviceInfo: req.headers["user-agent"]?.toString() ?? "unknown",
         changes: {
